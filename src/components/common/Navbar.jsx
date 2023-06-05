@@ -38,7 +38,7 @@ const Navbar = () => {
                                 <div className="select-dropdown__list">
                                     <div className="row">
                                         <div className="col-md-6">
-                                            <label htmlFor="">Choose Country</label>
+                                            <label>Choose Country</label>
                                             <select className="form-select form-select-sm" aria-label=".form-select-sm example">
                                                 <option defaultValue="0">Open this select menu</option>
                                                 <option value="1">One</option>
@@ -47,7 +47,7 @@ const Navbar = () => {
                                             </select>
                                         </div>
                                         <div className="col-md-6">
-                                            <label htmlFor="">Currency</label>
+                                            <label>Currency</label>
                                             <select className="form-select form-select-sm" aria-label=".form-select-sm example">
                                                 <option defaultValue="0">INR</option>
                                                 <option value="1">AED</option>
@@ -58,7 +58,7 @@ const Navbar = () => {
                                         </div>
                                     </div>
                                     <div className="row mt-3">
-                                        <label htmlFor="" className="mb-2">Choose Language</label>
+                                        <label className="mb-2">Choose Language</label>
                                         <div className="col-md-6">
                                             <div className="radio_button">
                                                 <div className="form-check ">
@@ -75,8 +75,8 @@ const Navbar = () => {
                                             <div className="radio_button">
                                                 <div className="form-check ">
                                                     <input className="form-check-input" type="radio" name="flexRadioDefault"
-                                                        id="flexRadioDefault1" />
-                                                    <label className="form-check-label" htmlFor="flexRadioDefault1">
+                                                        id="flexRadioDefault2" />
+                                                    <label className="form-check-label" htmlFor="flexRadioDefault2">
                                                         English
                                                     </label>
                                                 </div>
@@ -88,8 +88,8 @@ const Navbar = () => {
                                             <div className="radio_button">
                                                 <div className="form-check ">
                                                     <input className="form-check-input" type="radio" name="flexRadioDefault"
-                                                        id="flexRadioDefault1" />
-                                                    <label className="form-check-label" htmlFor="flexRadioDefault1">
+                                                        id="flexRadioDefault3" />
+                                                    <label className="form-check-label" htmlFor="flexRadioDefault3">
                                                         Assamese
                                                     </label>
                                                 </div>
@@ -101,8 +101,8 @@ const Navbar = () => {
                                             <div className="radio_button">
                                                 <div className="form-check ">
                                                     <input className="form-check-input" type="radio" name="flexRadioDefault"
-                                                        id="flexRadioDefault1" />
-                                                    <label className="form-check-label" htmlFor="flexRadioDefault1">
+                                                        id="flexRadioDefault4" />
+                                                    <label className="form-check-label" htmlFor="flexRadioDefault4">
                                                         Bengali
                                                     </label>
                                                 </div>
@@ -114,8 +114,8 @@ const Navbar = () => {
                                             <div className="radio_button">
                                                 <div className="form-check ">
                                                     <input className="form-check-input" type="radio" name="flexRadioDefault"
-                                                        id="flexRadioDefault1" />
-                                                    <label className="form-check-label" htmlFor="flexRadioDefault1">
+                                                        id="flexRadioDefault5" />
+                                                    <label className="form-check-label" htmlFor="flexRadioDefault5">
                                                         Gujrati
                                                     </label>
                                                 </div>
@@ -127,8 +127,8 @@ const Navbar = () => {
                                             <div className="radio_button">
                                                 <div className="form-check ">
                                                     <input className="form-check-input" type="radio" name="flexRadioDefault"
-                                                        id="flexRadioDefault1" />
-                                                    <label className="form-check-label" htmlFor="flexRadioDefault1">
+                                                        id="flexRadioDefault6" />
+                                                    <label className="form-check-label" htmlFor="flexRadioDefault6">
                                                         Marathi
                                                     </label>
                                                 </div>

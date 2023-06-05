@@ -46,7 +46,7 @@ const ExclusiveOffer = () => {
                                         first Booking</p>
                                     <div className="offer_code">
                                         <div className="copy-text">
-                                            <input type="text" className="text" value="NW2356" />
+                                            <input type="text" className="text" defaultValue="NW2356" />
                                             <button><i className="fa fa-clone"></i></button>
                                         </div>
                                     </div>
@@ -62,7 +62,7 @@ const ExclusiveOffer = () => {
                                         first Booking</p>
                                     <div className="offer_code">
                                         <div className="copy-text">
-                                            <input type="text" className="text" value="david@stylus.co.za" />
+                                            <input type="text" className="text" defaultValue="david@stylus.co.za" />
                                             <button><i className="fa fa-clone"></i></button>
                                         </div>
                                     </div>
@@ -78,7 +78,7 @@ const ExclusiveOffer = () => {
                                         first Booking</p>
                                     <div className="offer_code">
                                         <div className="copy-text">
-                                            <input type="text" className="text" value="david@stylus.co.za" />
+                                            <input type="text" className="text" defaultValue="david@stylus.co.za" />
                                             <button><i className="fa fa-clone"></i></button>
                                         </div>
                                     </div>
@@ -94,7 +94,7 @@ const ExclusiveOffer = () => {
                                         first Booking</p>
                                     <div className="offer_code">
                                         <div className="copy-text">
-                                            <input type="text" className="text" value="david@stylus.co.za" />
+                                            <input type="text" className="text" defaultValue="david@stylus.co.za" />
                                             <button><i className="fa fa-clone"></i></button>
                                         </div>
                                     </div>
@@ -110,7 +110,7 @@ const ExclusiveOffer = () => {
                                         first Booking</p>
                                     <div className="offer_code">
                                         <div className="copy-text">
-                                            <input type="text" className="text" value="david@stylus.co.za" />
+                                            <input type="text" className="text" defaultValue="david@stylus.co.za" />
                                             <button><i className="fa fa-clone"></i></button>
                                         </div>
                                     </div>
@@ -126,7 +126,7 @@ const ExclusiveOffer = () => {
                                         first Booking</p>
                                     <div className="offer_code">
                                         <div className="copy-text">
-                                            <input type="text" className="text" value="david@stylus.co.za" />
+                                            <input type="text" className="text" defaultValue="david@stylus.co.za" />
                                             <button><i className="fa fa-clone"></i></button>
                                         </div>
                                     </div>
@@ -142,7 +142,7 @@ const ExclusiveOffer = () => {
                                         first Booking</p>
                                     <div className="offer_code">
                                         <div className="copy-text">
-                                            <input type="text" className="text" value="david@stylus.co.za" />
+                                            <input type="text" className="text" defaultValue="david@stylus.co.za" />
                                             <button><i className="fa fa-clone"></i></button>
                                         </div>
                                     </div>
@@ -158,7 +158,7 @@ const ExclusiveOffer = () => {
                                         first Booking</p>
                                     <div className="offer_code">
                                         <div className="copy-text">
-                                            <input type="text" className="text" value="david@stylus.co.za" />
+                                            <input type="text" className="text" defaultValue="david@stylus.co.za" />
                                             <button><i className="fa fa-clone"></i></button>
                                         </div>
                                     </div>
@@ -174,7 +174,7 @@ const ExclusiveOffer = () => {
                                         first Booking</p>
                                     <div className="offer_code">
                                         <div className="copy-text">
-                                            <input type="text" className="text" value="david@stylus.co.za" />
+                                            <input type="text" className="text" defaultValue="david@stylus.co.za" />
                                             <button><i className="fa fa-clone"></i></button>
                                         </div>
                                     </div>
@@ -190,7 +190,7 @@ const ExclusiveOffer = () => {
                                         first Booking</p>
                                     <div className="offer_code">
                                         <div className="copy-text">
-                                            <input type="text" className="text" value="david@stylus.co.za" />
+                                            <input type="text" className="text" defaultValue="david@stylus.co.za" />
                                             <button><i className="fa fa-clone"></i></button>
                                         </div>
                                     </div>
@@ -206,7 +206,7 @@ const ExclusiveOffer = () => {
                                         first Booking</p>
                                     <div className="offer_code">
                                         <div className="copy-text">
-                                            <input type="text" className="text" value="david@stylus.co.za" />
+                                            <input type="text" className="text" defaultValue="david@stylus.co.za" />
                                             <button><i className="fa fa-clone"></i></button>
                                         </div>
                                     </div>
