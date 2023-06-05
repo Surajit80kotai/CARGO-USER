@@ -14,7 +14,7 @@ const Login = () => {
                         </div>  */}
                 </div>
                 <div className="login_right">
-
+                    <Link to="/"><i className="fa-solid fa-angle-left" style={{ color: "#ffffff" }}></i><span className='text-white mx-2'>Home</span></Link>
                     <div className="login_form">
                         <div className="login_com_logo">
                             <img src="./assets/img/logo (3).png" alt="" className="img-fluid" />
