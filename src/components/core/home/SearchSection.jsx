@@ -1,6 +1,21 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const SearchSection = () => {
+    const [from, setFrom] = useState({
+        city: "Bangalore",
+        airport: "[BLR]Bangaluru International Airport"
+    });
+    const [to, setTo] = useState({
+        city: "Kolkata",
+        airport: "[CCU]Subhas Chandra Bose International Airport"
+    });
+
+    // Function to handle the swap
+    const handleSwap = () => {
+        const temp = from;
+        setFrom(to);
+        setTo(temp);
+    }
 
     useEffect(() => {
         // function for date pickup
@@ -438,9 +453,9 @@ const SearchSection = () => {
                             <div className="search_item_colum">
                                 <p className="srlabel">FORM</p>
                                 <div className="main_location_name">
-                                    <h3>Bangalore</h3>
+                                    <h3>{from?.city}</h3>
                                 </div>
-                                <p className="airport_name">[BLR]Bangaluru International Airport</p>
+                                <p className="airport_name">{from?.airport}</p>
                             </div>
                         </button>
                         <div className="modal fade" id="form" tabIndex="-1" aria-labelledby="exampleModalLabel"
@@ -556,16 +571,16 @@ const SearchSection = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="swipesector">
 
-                        </div>
+                        <div className="swipesector" onClick={handleSwap}></div>
+
                         <button className="text-left" data-bs-toggle="modal" data-bs-target="#to">
                             <div className="search_item_colum">
                                 <p className="srlabel">TO</p>
                                 <div className="main_location_name">
-                                    <h3>Kolkata</h3>
+                                    <h3>{to?.city}</h3>
                                 </div>
-                                <p className="airport_name">[CCU]Subhas Chandra Bose Intern...</p>
+                                <p className="airport_name">{to?.airport}</p>
                             </div>
                         </button>
                         <div className="modal fade" id="to" tabIndex="-1" aria-labelledby="exampleModalLabel"

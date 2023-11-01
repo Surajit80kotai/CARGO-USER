@@ -8,21 +8,17 @@ const ExclusiveOffer = () => {
         infinite: true,
         speed: 500,
         slidesToShow: 3,
-        slidesToScroll: 3
+        slidesToScroll: 3,
+        autoplay: true,
+        autoplaySpeed: 5000
     };
 
 
-    let copyText = document.querySelector(".copy-text");
-    copyText?.querySelector("button").addEventListener("click", function () {
-        let input = copyText.querySelector("input.text");
-        input.select();
-        document.execCommand("copy");
-        copyText.classList.add("active");
-        window.getSelection().removeAllRanges();
-        setTimeout(function () {
-            copyText.classList.remove("active");
-        }, 2500);
-    });
+    const copyToClipboard = () => {
+        const copyText = document.querySelector('.text');
+        copyText.select();
+        document.execCommand('copy');
+    };
 
 
     return (
@@ -47,7 +43,7 @@ const ExclusiveOffer = () => {
                                     <div className="offer_code">
                                         <div className="copy-text">
                                             <input type="text" className="text" defaultValue="NW2356" />
-                                            <button><i className="fa fa-clone"></i></button>
+                                            <button onClick={copyToClipboard}><i className="fa fa-clone"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -63,7 +59,7 @@ const ExclusiveOffer = () => {
                                     <div className="offer_code">
                                         <div className="copy-text">
                                             <input type="text" className="text" defaultValue="david@stylus.co.za" />
-                                            <button><i className="fa fa-clone"></i></button>
+                                            <button onClick={copyToClipboard}><i className="fa fa-clone"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -79,7 +75,7 @@ const ExclusiveOffer = () => {
                                     <div className="offer_code">
                                         <div className="copy-text">
                                             <input type="text" className="text" defaultValue="david@stylus.co.za" />
-                                            <button><i className="fa fa-clone"></i></button>
+                                            <button onClick={copyToClipboard}><i className="fa fa-clone"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -95,7 +91,7 @@ const ExclusiveOffer = () => {
                                     <div className="offer_code">
                                         <div className="copy-text">
                                             <input type="text" className="text" defaultValue="david@stylus.co.za" />
-                                            <button><i className="fa fa-clone"></i></button>
+                                            <button onClick={copyToClipboard}><i className="fa fa-clone"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -111,7 +107,7 @@ const ExclusiveOffer = () => {
                                     <div className="offer_code">
                                         <div className="copy-text">
                                             <input type="text" className="text" defaultValue="david@stylus.co.za" />
-                                            <button><i className="fa fa-clone"></i></button>
+                                            <button onClick={copyToClipboard}><i className="fa fa-clone"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -127,7 +123,7 @@ const ExclusiveOffer = () => {
                                     <div className="offer_code">
                                         <div className="copy-text">
                                             <input type="text" className="text" defaultValue="david@stylus.co.za" />
-                                            <button><i className="fa fa-clone"></i></button>
+                                            <button onClick={copyToClipboard}><i className="fa fa-clone"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -143,7 +139,7 @@ const ExclusiveOffer = () => {
                                     <div className="offer_code">
                                         <div className="copy-text">
                                             <input type="text" className="text" defaultValue="david@stylus.co.za" />
-                                            <button><i className="fa fa-clone"></i></button>
+                                            <button onClick={copyToClipboard}><i className="fa fa-clone"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -159,7 +155,7 @@ const ExclusiveOffer = () => {
                                     <div className="offer_code">
                                         <div className="copy-text">
                                             <input type="text" className="text" defaultValue="david@stylus.co.za" />
-                                            <button><i className="fa fa-clone"></i></button>
+                                            <button onClick={copyToClipboard}><i className="fa fa-clone"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -175,7 +171,7 @@ const ExclusiveOffer = () => {
                                     <div className="offer_code">
                                         <div className="copy-text">
                                             <input type="text" className="text" defaultValue="david@stylus.co.za" />
-                                            <button><i className="fa fa-clone"></i></button>
+                                            <button onClick={copyToClipboard}><i className="fa fa-clone"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -191,7 +187,7 @@ const ExclusiveOffer = () => {
                                     <div className="offer_code">
                                         <div className="copy-text">
                                             <input type="text" className="text" defaultValue="david@stylus.co.za" />
-                                            <button><i className="fa fa-clone"></i></button>
+                                            <button onClick={copyToClipboard}><i className="fa fa-clone"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -207,7 +203,7 @@ const ExclusiveOffer = () => {
                                     <div className="offer_code">
                                         <div className="copy-text">
                                             <input type="text" className="text" defaultValue="david@stylus.co.za" />
-                                            <button><i className="fa fa-clone"></i></button>
+                                            <button onClick={copyToClipboard}><i className="fa fa-clone"></i></button>
                                         </div>
                                     </div>
                                 </div>

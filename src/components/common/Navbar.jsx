@@ -1,9 +1,14 @@
 import React from 'react'
+import { Helmet } from 'react-helmet'
 import { Link } from 'react-router-dom'
 
 const Navbar = () => {
     return (
         <>
+            <Helmet>
+                <script src="./assets/js/custom.js"></script>
+            </Helmet>
+
             <header>
                 <div className="container-fluid">
                     <div className="nav-wrapper ">
@@ -140,7 +145,7 @@ const Navbar = () => {
                                 </div>
                             </div>
                             <div className="login_btn">
-                                <Link to="/login">Login</Link>
+                                <Link to="/login">Logout</Link>
                             </div>
                             <div className="get_started">
                                 <Link to="#">Get Start</Link>
