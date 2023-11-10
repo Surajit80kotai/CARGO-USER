@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 
-const Login = () => {
+const Forgetpassword = () => {
     const [formValues, setFormValues] = useState({
         email: "",
-        password: ""
+        password: "",
+        conf_password: ""
     });
     const [formError, setFormError] = useState(false);
 
@@ -41,7 +42,7 @@ const Login = () => {
                             <img src="./assets/img/logo (3).png" alt="" className="img-fluid" />
 
                         </div>
-                        <h1 className="log_title">Log in with password</h1>
+                        <h1 className="log_title">Reset Your Password</h1>
                         <form onSubmit={handleSubmit}>
                             {
                                 formError ?
@@ -78,19 +79,20 @@ const Login = () => {
                                     required
                                 />
                             </div>
-                            <div className="mb-3 ">
-                                <Link to="/forget-password" className="Forgetpassword">Forgot your password?</Link>
+                            <div className="mb-3">
+                                <label htmlFor="conf_password" className="form-label">Confirm Password</label>
+                                <input
+                                    type="password"
+                                    className="form-control input_style"
+                                    id="conf_password"
+                                    placeholder="Enter Password Again"
+                                    name='conf_password'
+                                    value={formValues?.conf_password}
+                                    onChange={handleChange}
+                                    required
+                                />
                             </div>
-                            <button type="submit" className="loginbtn">Login</button>
-                            <div className="divider">
-                                <p>OR</p>
-                            </div>
-                            {/* <div className="text-center">
-                                <Link to="#" className="loginlink">Send me a login link</Link>
-                            </div> */}
-                            <div className="singin">
-                                <p>Don’t have an account yet? <Link to="/signup"> Sign Up Here</Link></p>
-                            </div>
+                            <button type="submit" className="loginbtn">Submit</button>
                         </form>
                     </div>
                 </div>
@@ -99,4 +101,4 @@ const Login = () => {
     )
 }
 
-export default Login
+export default Forgetpassword

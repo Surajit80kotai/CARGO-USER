@@ -29,8 +29,8 @@ const Signup = () => {
             const data = {
                 full_name: formValues?.full_name,
                 email: formValues?.email,
-                phone: formValues?.phone,
-                phone_country_code: formValues?.phone_country_code,
+                phone: formValues?.phone_country_code + formValues?.phone,
+                // phone_country_code: formValues?.phone_country_code,
                 password: formValues?.password
             }
             console.log({ data });
@@ -128,11 +128,10 @@ const Signup = () => {
                                     value={formValues?.conf_password}
                                     onChange={handleChange}
                                     required
+                                    style={{ border: formError ? "1px solid red" : "" }}
                                 />
                             </div>
-                            <div className="mb-3 ">
-                                <Link to="#" className="Forgetpassword">Forgot your password?</Link>
-                            </div>
+
                             <button type="submit" className="loginbtn">Register</button>
                             <div className="divider">
                                 <p>OR</p>
