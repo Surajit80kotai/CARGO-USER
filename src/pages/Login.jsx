@@ -1,32 +1,44 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom'
+import { clearAuthData, userLogin } from '../services/slices/AuthSlice';
 
 const Login = () => {
     const [formValues, setFormValues] = useState({
         email: "",
         password: ""
     });
-    const [formError, setFormError] = useState(false);
+    const [resError, setResError] = useState(null);
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { authData } = useSelector(state => state.authSlice);
 
     // handleChange func.
     const handleChange = (e) => {
         setFormValues({ ...formValues, [e.target.name]: e.target.value });
-        setFormError(false);
+        dispatch(clearAuthData());
+        setResError(null);
     }
 
     // handleSubmit func.
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (formError) {
-            setFormError(true);
-        } else {
-            const data = {
-                email: formValues?.email,
-                password: formValues?.password
-            }
-            console.log({ data });
+        const data = {
+            email: formValues?.email,
+            password: formValues?.password
         }
+        // console.log({ data });
+        dispatch(userLogin({ data, navigate }));
     }
+
+    useEffect(() => {
+        if (!authData?.success) {
+            setResError(authData);
+        }
+    }, [authData]);
+
+    // console.log(authData);
 
     return (
         <>
@@ -44,9 +56,9 @@ const Login = () => {
                         <h1 className="log_title">Log in with password</h1>
                         <form onSubmit={handleSubmit}>
                             {
-                                formError ?
+                                resError ?
                                     <div className="alert alert-danger " role="alert">
-                                        Incorrect Email Or Password!
+                                        {resError?.message}
                                     </div>
                                     : null
                             }
@@ -61,7 +73,8 @@ const Login = () => {
                                     name='email'
                                     value={formValues?.email}
                                     onChange={handleChange}
-                                    required
+                                    style={{ border: resError?.key === "email" ? "1px solid red" : "" }}
+                                // required
                                 />
 
                             </div>
@@ -75,7 +88,8 @@ const Login = () => {
                                     name='password'
                                     value={formValues?.password}
                                     onChange={handleChange}
-                                    required
+                                    style={{ border: resError?.key === "password" ? "1px solid red" : "" }}
+                                // required
                                 />
                             </div>
                             <div className="mb-3 ">

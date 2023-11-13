@@ -1,5 +1,7 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { clearAuthData, userForgetPassword } from '../services/slices/AuthSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Forgetpassword = () => {
     const [formValues, setFormValues] = useState({
@@ -7,49 +9,69 @@ const Forgetpassword = () => {
         password: "",
         conf_password: ""
     });
-    const [formError, setFormError] = useState(false);
+
+    const [formError, setFormError] = useState(null);
+    const [resError, setResError] = useState(null);
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { authData } = useSelector(state => state.authSlice);
 
     // handleChange func.
     const handleChange = (e) => {
         setFormValues({ ...formValues, [e.target.name]: e.target.value });
-        setFormError(false);
+        setFormError(null);
+        dispatch(clearAuthData());
+        setResError(null);
     }
 
     // handleSubmit func.
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (formError) {
-            setFormError(true);
+        if (formValues?.password !== formValues?.conf_password) {
+            setFormError({ error: true, message: "Password & Confrim Password Did Not Matched." });
         } else {
             const data = {
                 email: formValues?.email,
                 password: formValues?.password
             }
-            console.log({ data });
+            // console.log({ data });
+            dispatch(userForgetPassword({ data, navigate }));
         }
     }
+
+    useEffect(() => {
+        if (!authData?.success) {
+            setResError(authData);
+        }
+    }, [authData]);
+
 
     return (
         <>
             <div className="login_wrapper">
                 <div className="login_left">
-                    <img src="./assets/img/rachel-coyne-ZzVzIirmxSg-unsplash.jpg" alt="" className="img-fluid" />
+                    <img src="/assets/img/rachel-coyne-ZzVzIirmxSg-unsplash.jpg" alt="" className="img-fluid" />
                 </div>
                 <div className="login_right">
-                    <Link to="/"><i className="fa-solid fa-angle-left" style={{ color: "#ffffff" }}></i><span className='text-white mx-2'>Home</span></Link>
+                    <Link to="/login"><i className="fa-solid fa-angle-left" style={{ color: "#ffffff" }}></i><span className='text-white mx-2'>Back</span></Link>
                     <div className="login_form">
                         <div className="login_com_logo">
-                            <img src="./assets/img/logo (3).png" alt="" className="img-fluid" />
+                            <img src="/assets/img/logo (3).png" alt="" className="img-fluid" />
 
                         </div>
                         <h1 className="log_title">Reset Your Password</h1>
                         <form onSubmit={handleSubmit}>
                             {
-                                formError ?
+                                formError?.error ?
                                     <div className="alert alert-danger " role="alert">
-                                        Incorrect Email Or Password!
+                                        {formError?.message}
                                     </div>
-                                    : null
+                                    : resError ?
+                                        <div className="alert alert-danger " role="alert">
+                                            {resError?.message}
+                                        </div>
+                                        : null
                             }
                             <div className="mb-3">
                                 <label htmlFor="email" className="form-label">Email address</label>
@@ -62,7 +84,8 @@ const Forgetpassword = () => {
                                     name='email'
                                     value={formValues?.email}
                                     onChange={handleChange}
-                                    required
+                                    style={{ border: resError?.key === "email" ? "1px solid red" : "" }}
+                                // required
                                 />
 
                             </div>
@@ -76,7 +99,8 @@ const Forgetpassword = () => {
                                     name='password'
                                     value={formValues?.password}
                                     onChange={handleChange}
-                                    required
+                                    style={{ border: resError?.key === "password" ? "1px solid red" : "" }}
+                                // required
                                 />
                             </div>
                             <div className="mb-3">
@@ -89,7 +113,8 @@ const Forgetpassword = () => {
                                     name='conf_password'
                                     value={formValues?.conf_password}
                                     onChange={handleChange}
-                                    required
+                                    style={{ border: formError ? "1px solid red" : "" }}
+                                // required
                                 />
                             </div>
                             <button type="submit" className="loginbtn">Submit</button>

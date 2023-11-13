@@ -1,8 +1,47 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Helmet } from 'react-helmet'
-import { Link } from 'react-router-dom'
+import { useDispatch } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom'
+import { doLogOut } from '../../services/slices/AuthSlice';
+import { jwtDecode } from 'jwt-decode';
+import { toast } from 'react-toastify';
 
 const Navbar = () => {
+    // logged in user & token
+    // const USER = JSON.parse(window.localStorage.getItem("user"));
+    const TOKEN = JSON.parse(window.localStorage.getItem("token"));
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+
+    // logout func.
+    const LOGOUT = () => {
+        dispatch(doLogOut());
+        navigate('/login');
+    }
+
+
+    // Componenet mount cycle
+    useEffect(() => {
+        // Check your session and logout after it's expired.
+        if (TOKEN) {
+            // decode jwt token
+            const decodedJwt = jwtDecode(TOKEN);
+            const isExpired = decodedJwt.exp < Date.now() / 1000;
+            if (isExpired) {
+                dispatch(doLogOut());
+                navigate('/login');
+                // react toast message
+                toast.success("Your Session Has Expired Please Login To Continue", {
+                    autoClose: 4500
+                });
+            }
+        } else {
+            navigate('/login');
+        }
+    }, [dispatch, navigate, TOKEN]);
+
     return (
         <>
             <Helmet>
@@ -145,7 +184,7 @@ const Navbar = () => {
                                 </div>
                             </div>
                             <div className="login_btn">
-                                <Link to="/login">Logout</Link>
+                                <Link onClick={LOGOUT} to="/login">Logout</Link>
                             </div>
                             <div className="get_started">
                                 <Link to="#">Get Start</Link>

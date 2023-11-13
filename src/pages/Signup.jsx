@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import PhoneInput from 'react-phone-input-2'
-import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom'
+import { clearAuthData, userSignup } from '../services/slices/AuthSlice';
 
 const Signup = () => {
     const [formValues, setFormValues] = useState({
@@ -12,53 +14,72 @@ const Signup = () => {
         conf_password: "",
     });
 
-    const [formError, setFormError] = useState(false);
+    const [formError, setFormError] = useState(null);
+    const [resError, setResError] = useState(null);
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { authData } = useSelector(state => state.authSlice);
 
     // handleChange func.
     const handleChange = (e) => {
         setFormValues({ ...formValues, [e.target.name]: e.target.value });
-        setFormError(false);
+        setFormError(null);
+        dispatch(clearAuthData());
+        setResError(null);
     }
 
     // handleSubmit func.
     const handleSubmit = (e) => {
         e.preventDefault();
         if (formValues?.password !== formValues?.conf_password) {
-            setFormError(true);
+            setFormError({ error: true, message: "Password & Confrim Password Did Not Matched." });
         } else {
             const data = {
                 full_name: formValues?.full_name,
                 email: formValues?.email,
-                phone: formValues?.phone_country_code + formValues?.phone,
-                // phone_country_code: formValues?.phone_country_code,
+                phone: formValues?.phone,
                 password: formValues?.password
             }
-            console.log({ data });
+            // console.log({ data });
+            dispatch(userSignup({ data, navigate }));
         }
     }
 
+
+    useEffect(() => {
+        if (!authData?.success) {
+            setResError(authData);
+        }
+    }, [authData]);
+
+    // console.log(error);
 
     return (
         <>
             <div className="login_wrapper">
                 <div className="signup_left">
-                    <img src="./assets/img/rachel-coyne-ZzVzIirmxSg-unsplash.jpg" alt="" className="img-fluid" />
+                    <img src="/assets/img/rachel-coyne-ZzVzIirmxSg-unsplash.jpg" alt="" className="img-fluid" />
                 </div>
                 <div className="login_right">
                     <Link to="/"><i className="fa-solid fa-angle-left" style={{ color: "#ffffff" }}></i><span className='text-white mx-2'>Home</span></Link>
                     <div className="login_form">
                         <div className="login_com_logo">
-                            <img src="./assets/img/logo (3).png" alt="" className="img-fluid" />
+                            <img src="/assets/img/logo (3).png" alt="" className="img-fluid" />
 
                         </div>
                         <h1 className="log_title">Signup with your information</h1>
                         <form onSubmit={handleSubmit}>
                             {
-                                formError ?
+                                formError?.error ?
                                     <div className="alert alert-danger " role="alert">
-                                        Password & Confirm Password Did Not Matched
+                                        {formError?.message}
                                     </div>
-                                    : null
+                                    : resError ?
+                                        <div className="alert alert-danger " role="alert">
+                                            {resError?.message}
+                                        </div>
+                                        : null
                             }
 
                             <div className="mb-3">
@@ -71,7 +92,8 @@ const Signup = () => {
                                     name='full_name'
                                     value={formValues?.full_name}
                                     onChange={handleChange}
-                                    required
+                                    style={{ border: resError?.key === "full_name" ? "1px solid red" : "" }}
+                                // required
                                 />
                             </div>
                             <div className="mb-3">
@@ -85,7 +107,8 @@ const Signup = () => {
                                     name='email'
                                     value={formValues?.email}
                                     onChange={handleChange}
-                                    required
+                                    style={{ border: resError?.key === "email" ? "1px solid red" : "" }}
+                                // required
                                 />
                             </div>
                             <div className="mb-3">
@@ -94,14 +117,25 @@ const Signup = () => {
                                     placeholder="Enter your phone number"
                                     inputProps={{
                                         name: 'phone',
-                                        required: true,
+                                        // required: true,
                                     }}
                                     enableSearch={true}
                                     enableLongNumbers={true}
                                     country={'in'}
                                     value={formValues?.phone}
-                                    onChange={(phoneValue, countryCode) => setFormValues({ ...formValues, phone: `+${phoneValue}`, phone_country_code: `+${countryCode?.dialCode}` })
-                                    }
+                                    onChange={(phoneValue, countryCode) => {
+                                        // Your existing logic
+                                        setFormValues({ ...formValues, phone: `+${phoneValue}`, phone_country_code: `+${countryCode?.dialCode}` });
+
+                                        // Additional actions
+                                        dispatch(clearAuthData());
+                                        setFormError(null);
+                                        setResError(null);
+                                    }}
+                                    style={resError?.key === "phone" ? {
+                                        border: '1px solid red',
+                                        borderRadius: '5px',
+                                    } : null}
                                 />
                             </div>
                             <div className="mb-3">
@@ -114,7 +148,8 @@ const Signup = () => {
                                     name='password'
                                     value={formValues?.password}
                                     onChange={handleChange}
-                                    required
+                                    style={{ border: resError?.key === "password" ? "1px solid red" : "" }}
+                                // required
                                 />
                             </div>
                             <div className="mb-3">
@@ -127,7 +162,7 @@ const Signup = () => {
                                     name='conf_password'
                                     value={formValues?.conf_password}
                                     onChange={handleChange}
-                                    required
+                                    // required
                                     style={{ border: formError ? "1px solid red" : "" }}
                                 />
                             </div>
