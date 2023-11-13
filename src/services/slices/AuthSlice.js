@@ -94,8 +94,8 @@ const AuthSlice = createSlice({
         clearAuthError: (state) => {
             state.error = null;
         },
-        clearAuthData: (state, { payload }) => {
-            state.data = null;
+        clearAuthData: (state) => {
+            state.authData = null;
         }
     },
     extraReducers: (builder) => {

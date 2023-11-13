@@ -45,15 +45,15 @@ const Navbar = () => {
     return (
         <>
             <Helmet>
-                <script src="./assets/js/custom.js"></script>
+                <script src="/assets/js/custom.js"></script>
             </Helmet>
 
             <header>
                 <div className="container-fluid">
                     <div className="nav-wrapper ">
 
-                        <div className="logo-container">
-                            <img className="logo" src="./assets/img/logo (3).png" alt="Logo" />
+                        <div className="logo-container" onClick={() => navigate('/')}>
+                            <img className="logo" src="/assets/img/logo (3).png" alt="Logo" />
                         </div>
                         <nav>
                             <input className="hidden" type="checkbox" id="menuToggle" />
@@ -62,7 +62,7 @@ const Navbar = () => {
                                 <div className="menu"></div>
                                 <div className="menu"></div>
                             </label>
-                            <div className="nav-container">
+                            {/* <div className="nav-container">
                                 <ul className="nav-tabs">
                                     <li className="nav-tab"> <Link to="#">For forwards</Link> </li>
                                     <li className="nav-tab"> <Link to="#">For airlines</Link> </li>
@@ -71,7 +71,7 @@ const Navbar = () => {
                                     <li className="nav-tab"> <Link to="#" className="open_res">Login</Link></li>
                                     <li className="nav-tab"> <Link to="#" className="open_res">Sign Up</Link></li>
                                 </ul>
-                            </div>
+                            </div> */}
                         </nav>
 
                         <div className="right ">
@@ -186,9 +186,9 @@ const Navbar = () => {
                             <div className="login_btn">
                                 <Link onClick={LOGOUT} to="/login">Logout</Link>
                             </div>
-                            <div className="get_started">
+                            {/* <div className="get_started">
                                 <Link to="#">Get Start</Link>
-                            </div>
+                            </div> */}
                             <div className="hlpline">
                                 <p><i className="fas fa-headphones-alt" style={{ color: "#2b2b2b" }}></i><span> Helpline: <a
                                     href="tel:2358789546"> 2358789546</a></span></p>
