@@ -8,7 +8,12 @@ export const userSearchFlights = createAsyncThunk("/user/signup", async ({ data,
     try {
         const result = await SEARCHFLIGHTS(data, header);
         if (result?.data?.success) {
-            navigate("/serchresult", { state: result?.data });
+            navigate("/serchresult", {
+                state: {
+                    resultData: result?.data?.data,
+                    requestData: data
+                }
+            });
         }
         return result?.data;
     } catch (err) {

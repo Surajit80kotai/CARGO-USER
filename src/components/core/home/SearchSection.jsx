@@ -67,7 +67,7 @@ const SearchSection = () => {
             shipmentDate: formValues?.shipmentDate,
             quantity: formValues?.quantity
         }
-        console.log({ data, header });
+        // console.log({ data, header });
         dispatch(userSearchFlights({ data, navigate, header }))
     }
 
