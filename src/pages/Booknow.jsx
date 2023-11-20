@@ -1,13 +1,24 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const Booknow = () => {
+    const location = useLocation();
+    const { resultData = [], requestData = [] } = location.state || [];
+    const navigate = useNavigate();
+
+    // console.log("Book Now=>", { resultData, requestData });
+
     return (
         <>
             <main>
                 <div className="container">
                     <div className="brecramp mb-5">
-                        <Link to="#"><i className="fas fa-chevron-left" style={{ color: "#292929" }}></i> Back</Link>
+                        <button onClick={() => navigate('/serchresult', {
+                            state: {
+                                resultData: resultData,
+                                requestData: requestData
+                            }
+                        })}><i className="fas fa-chevron-left" style={{ color: "#292929" }}></i> Back</button>
                     </div>
                     <div className="row ">
                         <div className="col-md-8">
@@ -15,7 +26,7 @@ const Booknow = () => {
                                 <div className="booking_card_head">
                                     <div className="bk_left">
                                         <div className="airline_logo">
-                                            <img src="./assets/img/download.png" alt="" />
+                                            <img src="/assets/img/download.png" alt="" />
                                         </div>
                                         <div className="up_down_location">
                                             <h4>BLR <i className="fas fa-arrow-right" style={{ color: "#363636" }}></i> KOL</h4>
@@ -26,7 +37,7 @@ const Booknow = () => {
                                     </div>
                                     <div className="bk_right">
                                         <div className="save_btn">
-                                            <button className="sv_btn">Save</button>
+                                            <button className="sv_btn me-2">Save</button>
                                             <button className="share"><i className="fas fa-share-alt" style={{ color: "#E70A3E" }}></i>Share</button>
                                         </div>
                                     </div>
@@ -146,8 +157,8 @@ const Booknow = () => {
                                     </div>
                                 </div>
                                 {/* <button className="book"><i className="fas fa-lock" style={{color: "#ffffff"}}></i> Book Now</button> */}
-                                <button className="place-order place-order--default">
-                                    <div className="default text">Book Now</div>
+                                <button onClick={() => navigate('/payment')} className="place-order place-order--default">
+                                    <div className="default text">Continue</div>
                                     <div className="forklift">
                                         <div className="upper"></div>
                                         <div className="lower"></div>

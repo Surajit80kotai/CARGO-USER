@@ -12,3 +12,5 @@ export const FORGETPASSWORD = (data) => API.post('/user/forget/password', data);
 export const SEARCHFLIGHTS = (data, header) => API.post('/user/search/flights', data, header);
 // get all flight
 export const GETALLFLIGHTS = () => API.get('/all/flight');
+// all airline
+export const ALLAIRLINE = () => API.get('/system/all/airline');

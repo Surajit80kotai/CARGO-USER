@@ -1,36 +1,126 @@
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom';
-import SearchResultFlightList from '../components/core/others/SearchResultFlightList';
+import SearchResultFlightList from '../components/core/search-result-filter/SearchResultFlightList';
+import PriceRangeFilter from '../components/core/search-result-filter/PriceRangeFilter';
+import AirlineFilter from '../components/core/search-result-filter/AirlineFilter';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllAirlines } from '../services/slices/UtilitySlice';
+import ProductDetails from '../components/core/search-result-filter/ProductDetails';
 
 const SearchResults = () => {
     const location = useLocation();
-    const { resultData, requestData } = location.state;
+    const { resultData = [], requestData = [] } = location.state || [];
+    const [filteredData, setFilteredData] = useState(resultData);
+    const [selectedAirlines, setSelectedAirlines] = useState([]);
+    const [airlineData, setAirlineData] = useState([]);
+    const [productDetails, setProductDetails] = useState([]);
+
+
+    const dispatch = useDispatch();
+    const { airline_data } = useSelector(state => state.utilitySlice);
 
     // Function to get the minimum price from an array of flights
     const getMinPriceFlight = (flights) => {
         return flights?.reduce((minFlight, currentFlight) => {
-            const minPrice = minFlight?.price?.price || Infinity;
-            const currentPrice = currentFlight?.price?.price || Infinity;
+            const minPrice = Number(minFlight?.price?.price) || Infinity;
+            const currentPrice = Number(currentFlight?.price?.price) || Infinity;
 
             return currentPrice < minPrice ? currentFlight : minFlight;
         }, {});
     };
-
     // Get the flight with the lowest price
     const flightWithMinPrice = getMinPriceFlight(resultData);
 
-    // Log the result
-    console.log(flightWithMinPrice);
 
-    // console.log(resultData);
-    // console.log(requestData);
+    // Callback function to handle both price range and airline changes
+    const handleFilterChange = useCallback((range, selectedAirlines) => {
+        let filteredResult = resultData;
+        // Apply price range filter
+        if (range) {
+            filteredResult = filteredResult?.filter(
+                (item) =>
+                    Number(item?.price?.price) >= range[0] &&
+                    Number(item?.price?.price) <= range[1]
+            );
+        }
+        // Apply airline filter
+        if (selectedAirlines?.length) {
+            filteredResult = filteredResult?.filter(
+                (item) => selectedAirlines?.includes(item?._airlineId?.airline)
+            );
+        }
+        setFilteredData(filteredResult);
+    }, [resultData]);
+
+
+    // Callback function to handle price range changes
+    const handlePriceRangeChange = (range) => {
+        const filteredResult = resultData?.filter(
+            (item) =>
+                Number(item?.price?.price) >= range[0] &&
+                Number(item?.price?.price) <= range[1]
+        );
+        setFilteredData(filteredResult);
+        handleFilterChange(range, selectedAirlines);
+    };
+
+    // Function to filter airlines
+    const handleAirlineChange = (selectedAirline) => {
+        // Check if the airline is already selected
+        if (selectedAirlines?.includes(selectedAirline)) {
+            // If selected, remove it from the list
+            setSelectedAirlines((prevSelectedAirlines) =>
+                prevSelectedAirlines?.filter((airline) => airline !== selectedAirline)
+            );
+        } else {
+            // If not selected, add it to the list
+            setSelectedAirlines((prevSelectedAirlines) => [...prevSelectedAirlines, selectedAirline]);
+        }
+        handleFilterChange(null, selectedAirlines);
+    };
+
+
+    // handleProductDetailsChange function
+    const handleProductDetailsChange = useCallback((index, field, value) => {
+        const updatedProductDetails = [...productDetails];
+        updatedProductDetails[index] = {
+            ...updatedProductDetails[index],
+            [field]: value,
+        };
+        setProductDetails(updatedProductDetails);
+    }, [productDetails]);
+
+
+    // handleSubmit function
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log("productDetails=>", { productDetails });
+    }
+
+
+    useEffect(() => {
+        dispatch(getAllAirlines());
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (!selectedAirlines?.length) {
+            setFilteredData(resultData);
+        } else if (selectedAirlines?.length) {
+            const filteredResult = resultData?.filter(
+                (item) => selectedAirlines?.includes(item?._airlineId?.airline)
+            );
+            setFilteredData(filteredResult);
+        }
+        setAirlineData(airline_data?.data);
+    }, [resultData, selectedAirlines, airline_data]);
+
 
     return (
         <>
             <main>
                 <div className="serch_result_wrapper">
-                    <div className="serch_result_inner">
-                        <form action="">
+                    <form onSubmit={handleSubmit}>
+                        <div className="serch_result_inner">
                             <div className="container">
 
                                 {/* Search Result */}
@@ -96,86 +186,24 @@ const SearchResults = () => {
                                         </div>
                                     </div>
                                 </div>
-
-                                {/* Product Details */}
-                                <h3 className="text-center text-white mt-5 mb-5">Fill Product Details</h3>
-                                <div className="product_details_form">
-                                    <div className="product_form">
-                                        <div className="">
-                                            <label htmlFor="exampleInputEmail1" className="form-label pro_form_label">Quantity</label>
-                                            <input type="text" className="form-control pro_form_input" id="exampleInputEmail1" aria-describedby="emailHelp" name="" placeholder="Quantity" />
-
-                                        </div>
-                                    </div>
-                                    <div className="product_form">
-                                        <div className="">
-                                            <label htmlFor="exampleInputEmail1" className="form-label pro_form_label">Length(cm)</label>
-                                            <input type="text" className="form-control pro_form_input" id="exampleInputEmail1" aria-describedby="emailHelp" name="" placeholder="Length" />
-
-                                        </div>
-                                    </div>
-                                    <div className="product_form">
-                                        <div className="">
-                                            <label htmlFor="exampleInputEmail1" className="form-label pro_form_label">Width(cm)</label>
-                                            <input type="text" className="form-control pro_form_input" id="exampleInputEmail1" aria-describedby="emailHelp" name="" placeholder="Width" />
-
-                                        </div>
-                                    </div>
-                                    <div className="product_form">
-                                        <div className="">
-                                            <label htmlFor="exampleInputEmail1" className="form-label pro_form_label">Height(cm)</label>
-                                            <input type="text" className="form-control pro_form_input" id="exampleInputEmail1" aria-describedby="emailHelp" name="" placeholder="Height" />
-
-                                        </div>
-                                    </div>
-                                    <div className="product_form">
-                                        <div className="">
-                                            <label htmlFor="exampleInputEmail1" className="form-label pro_form_label">Weight(kg)</label>
-                                            <input type="text" className="form-control pro_form_input" id="exampleInputEmail1" aria-describedby="emailHelp" name="" placeholder="Weight" />
-
-                                        </div>
-                                    </div>
-                                    <div className="product_form">
-                                        <div className="">
-                                            <label htmlFor="exampleInputEmail1" className="form-label pro_form_label">Weight Type</label>
-                                            <div className="form-check">
-                                                <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" />
-                                                <label className="form-check-label text-white" htmlFor="flexRadioDefault1">
-                                                    Total
-                                                </label>
-                                            </div>
-                                            <div className="form-check">
-                                                <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" defaultChecked />
-                                                <label className="form-check-label text-white" htmlFor="flexRadioDefault2">
-                                                    Per Item
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="product_form">
-                                        <div className="">
-                                            <label htmlFor="exampleInputEmail1" className="form-label pro_form_label">Packing</label>
-                                            <div className="form-check">
-                                                <input className="form-check-input" type="checkbox" defaultValue="" id="flexCheckDefault" />
-                                                <label className="form-check-label text-white" htmlFor="flexCheckDefault">
-                                                    Stockable
-                                                </label>
-                                            </div>
-                                            <div className="form-check">
-                                                <input className="form-check-input" type="checkbox" defaultValue="" id="flexCheckdefaultChecked" defaultChecked />
-                                                <label className="form-check-label text-white" htmlFor="flexCheckdefaultChecked">
-                                                    Trunable
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
                             </div>
+                        </div>
 
-                        </form>
-                    </div>
+                        <div className="container">
+                            <h3 className="text-center text-white mt-5 mb-5">Fill Product Details</h3>
+                            {/* Product Details */}
+                            <ProductDetails requestData={requestData} onProductDetailsChange={handleProductDetailsChange} />
+
+                            {/* Submit Button */}
+                            <div className='text-center'>
+                                <button className='book_now'>Submit</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
+
+
+
                 <div className="container mt-5">
                     <div className="row">
                         {/* Left Side Filter */}
@@ -189,7 +217,7 @@ const SearchResults = () => {
                                     </div>
                                     <div className="fillter_wrapper ">
                                         {/* Popular Filter */}
-                                        <div className="popular_filter pb-2">
+                                        {/* <div className="popular_filter pb-2">
                                             <div className="filter_option">
                                                 <h5>Popular Fillter</h5>
                                             </div>
@@ -243,73 +271,14 @@ const SearchResults = () => {
                                                 </label>
                                             </div>
                                         </div>
-                                        <hr />
+                                        <hr /> */}
 
                                         {/* Price range */}
-                                        <div className="price_range">
-                                            <div className="filter_option">
-                                                <h5>Price Range</h5>
-                                            </div>
-                                            <div className="price_wrapper">
-                                                <fieldset className="filter-price">
-
-                                                    <div className="price-field">
-                                                        <input type="range" min="100" max="500" defaultValue="100" id="lower" />
-                                                        <input type="range" min="100" max="500" defaultValue="500" id="upper" />
-                                                    </div>
-                                                    <div className="price-wrap">
-
-                                                        <div className="price-wrap-1">
-                                                            <input id="one" />
-                                                            <label htmlFor="one">Rs</label>
-                                                        </div>
-                                                        <div className="price-wrap_line">-</div>
-                                                        <div className="price-wrap-2">
-                                                            <input id="two" />
-                                                            <label htmlFor="two">Rs</label>
-                                                        </div>
-                                                    </div>
-                                                </fieldset>
-                                            </div>
-                                        </div>
+                                        <PriceRangeFilter onPriceRangeChange={handlePriceRangeChange} />
                                         <hr />
 
                                         {/* Airline filter */}
-                                        <div className="airlines_wrapper">
-                                            <div className="filter_option mb-3">
-                                                <h5>Airlines</h5>
-                                            </div>
-                                            <div className="form-check mb-2">
-                                                <input className="form-check-input" type="checkbox" defaultValue="" id="flexCheckDefault" />
-                                                <label className="form-check-label" htmlFor="flexCheckDefault">
-                                                    <img src="/assets/img/air1.png" alt="" /> <span>Spicejet</span>
-                                                </label>
-                                            </div>
-                                            <div className="form-check mb-2">
-                                                <input className="form-check-input" type="checkbox" defaultValue="" id="flexCheckdefaultChecked" />
-                                                <label className="form-check-label" htmlFor="flexCheckdefaultChecked">
-                                                    <img src="/assets/img/air2.png" alt="" />  <span>Go First</span>
-                                                </label>
-                                            </div>
-                                            <div className="form-check mb-2">
-                                                <input className="form-check-input" type="checkbox" defaultValue="" id="flexCheckDefault" />
-                                                <label className="form-check-label" htmlFor="flexCheckDefault">
-                                                    <img src="/assets/img/air3.png" alt="" /> <span>Air Asia</span>
-                                                </label>
-                                            </div>
-                                            <div className="form-check mb-2">
-                                                <input className="form-check-input" type="checkbox" defaultValue="" id="flexCheckdefaultChecked" />
-                                                <label className="form-check-label" htmlFor="flexCheckdefaultChecked">
-                                                    <img src="/assets/img/air4.png" alt="" />  <span>Indigo</span>
-                                                </label>
-                                            </div>
-                                            <div className="form-check">
-                                                <input className="form-check-input" type="checkbox" defaultValue="" id="flexCheckdefaultChecked" />
-                                                <label className="form-check-label" htmlFor="flexCheckdefaultChecked">
-                                                    <img src="/assets/img/air5.png" alt="" />  <span>AirIndia</span>
-                                                </label>
-                                            </div>
-                                        </div>
+                                        <AirlineFilter airlineData={airlineData} onAirlineChange={handleAirlineChange} />
                                     </div>
                                 </div>
                             </form>
@@ -322,16 +291,18 @@ const SearchResults = () => {
                                 <div className="chep">
                                     <h4>Chepest</h4>
                                 </div>
-                                <h3>Flights starting from ₹ 18294 <span><img src="/assets/img/5357316 1.png" alt="" className="img-fluid" style={{ width: "50px" }} /></span></h3>
+                                <h3>Flights starting from ₹ {flightWithMinPrice?.price?.price}/kg <span><img src="/assets/img/5357316 1.png" alt="" className="img-fluid" style={{ width: "50px" }} /></span></h3>
                             </div>
                             <div className="serch_result_show">
                                 {
-                                    resultData?.map((item, index) => {
+                                    filteredData?.map((item, index) => {
                                         return (
                                             <SearchResultFlightList
                                                 item={item}
                                                 index={index}
                                                 key={item?._id}
+                                                resultData={resultData}
+                                                requestData={requestData}
                                             />
                                         )
                                     })

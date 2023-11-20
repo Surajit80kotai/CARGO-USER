@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { GETALLFLIGHTS, SEARCHFLIGHTS } from "../api/Api";
+import { ALLAIRLINE, GETALLFLIGHTS, SEARCHFLIGHTS } from "../api/Api";
 
 
 
@@ -36,6 +36,17 @@ export const getAllFlight = createAsyncThunk("/all/flight", async (payload, { re
 });
 
 
+// All Airlines 
+export const getAllAirlines = createAsyncThunk("/all/airline", async (payload, { rejectWithValue }) => {
+    try {
+        const result = await ALLAIRLINE();
+        return result?.data;
+    } catch (err) {
+        return rejectWithValue(err.response.data);
+    }
+})
+
+
 
 // Creating Slice
 const UtilitySlice = createSlice({
@@ -43,6 +54,7 @@ const UtilitySlice = createSlice({
     initialState: {
         searchData: null,
         flightData: [],
+        airline_data: null,
         status: null,
         loading: false
     },
@@ -81,6 +93,22 @@ const UtilitySlice = createSlice({
         builder.addCase(getAllFlight.rejected, (state, { payload }) => {
             state.loading = false;
             state.status = "Rejected";
+            state.error = payload;
+        })
+
+        //States for getAllAirlines
+        builder.addCase(getAllAirlines.pending, (state, { payload }) => {
+            state.status = "Loading...";
+            state.loading = true;
+        })
+        builder.addCase(getAllAirlines.fulfilled, (state, { payload }) => {
+            state.status = "Success";
+            state.loading = false;
+            state.airline_data = payload;
+        })
+        builder.addCase(getAllAirlines.rejected, (state, { payload }) => {
+            state.status = "Failed";
+            state.loading = false;
             state.error = payload;
         })
 
