@@ -1,11 +1,7 @@
 import { addDays, differenceInMilliseconds, format, isAfter, parse } from 'date-fns';
-import React from 'react'
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 
-const SearchResultFlightList = ({ resultData, requestData, item, index }) => {
-
-    const navigate = useNavigate();
-
+const SearchResultFlightList = ({ item, index, onBookNowClick, isBooked }) => {
     const startTimeString = item?.deperture_time;
     const endTimeString = item?.arival_time;
 
@@ -28,6 +24,15 @@ const SearchResultFlightList = ({ resultData, requestData, item, index }) => {
 
     const formattedStartTime = format(startTime, 'h:mm a');
     const formattedEndTime = format(endTime, 'h:mm a');
+
+    const handleBookNowClick = () => {
+        // Call the callback function with the flight data
+        onBookNowClick(item, index);
+    };
+
+    const lowestPrice = item?.price?.reduce((minPrice, currentPrice) => {
+        return currentPrice?.price < minPrice?.price ? currentPrice : minPrice;
+    }, item.price[0]);
 
 
     return (
@@ -85,18 +90,22 @@ const SearchResultFlightList = ({ resultData, requestData, item, index }) => {
                         </div>
                     </div>
                     <div className="total_cost">
-                        <h4> ₹ <span> {item?.price?.price}</span></h4>
+                        <h4> ₹ <span> {lowestPrice?.price}<span style={{ color: "#e70a3e" }}>**</span></span></h4>
                     </div>
-                    <div className="book_btn">
-                        <button onClick={() => navigate('/booknow', {
-                            state: {
-                                resultData: resultData,
-                                requestData: requestData
-                            }
-                        })} className="book_now">Book Now</button>
-                    </div>
+                    <button
+                        className="book_now"
+                        onClick={handleBookNowClick}
+                        disabled={isBooked}
+                        style={isBooked ? {
+                            background: "white",
+                            color: "#e70a3e",
+                            border: "1px solid #e70a3e"
+                        } : null}
+                    >
+                        {isBooked ? 'Booked' : 'Book Now'}
+                    </button>
                 </div>
-
+                {/* #e70a3e */}
                 {/* Offer section */}
                 {/* <div className="offer_showing">
                     <h5><span><img src="/assets/img/879859 1.png" alt="" /></span> Get Rs 250 off using MMTOFFER</h5>

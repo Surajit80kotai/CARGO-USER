@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-const ProductDetails = ({ requestData, onProductDetailsChange }) => {
+const ProductDetails = ({ requestData, onProductDetailsChange, flight }) => {
     const { quantity } = requestData;
     // Convert quantity to a number
     const quantityNumber = parseInt(quantity, Infinity);
@@ -16,6 +16,9 @@ const ProductDetails = ({ requestData, onProductDetailsChange }) => {
         isTrunable: false,
         isBatteryIncluded: false
     }));
+    const [newTotalWeight, setNewTotalWeight] = useState(0);
+    const [newTotalPrice, setNewTotalPrice] = useState(0);
+    const [dimension, setDimension] = useState("");
 
     const handleInputChange = (index, field, value) => {
         setInputFields((prevFields) => {
@@ -25,42 +28,69 @@ const ProductDetails = ({ requestData, onProductDetailsChange }) => {
                 [field]: value
             };
 
-            // Calculate the total price when weight is changed
+            // Calculate the total price when weight or category is changed
             if (field === 'weight' || field === 'category') {
-                const totalPrice = 200;
+                // Assuming volumetric factor is 5000, you can adjust this value based on your requirements
+                const volumetricFactor = 5000;
+
+                // Calculate volumetric weight
+                const length = parseFloat(newFields[index].Length) || 0;
+                const width = parseFloat(newFields[index].width) || 0;
+                const height = parseFloat(newFields[index].height) || 0;
+                const volumetricWeight = (length * width * height) / volumetricFactor;
+
+                // Update the state with the calculated volumetric weight
+                newFields[index].weight = volumetricWeight;
+
+                // Assuming flight is the object containing the flight details
+                const flightCategories = flight?.price || [];
+
+                // Get the selected category
+                const selectedCategory = newFields[index].category;
+
+                // Find the category object from flightCategories
+                const selectedCategoryObj = flightCategories.find(categoryObj => categoryObj.category === selectedCategory);
+
+                // Calculate the total price based on the selected category and volumetric weight
+                const totalPrice = selectedCategoryObj ? selectedCategoryObj?.price * volumetricWeight : 0;
+
+                // Update the state with the calculated total price
                 newFields[index].totalPrice = totalPrice;
+
+                // Calculate the total dimensions
+                const totalDimensions = newFields.reduce(
+                    (total, product) => {
+                        return {
+                            Length: total.Length + (parseFloat(product.Length) || 0),
+                            width: total.width + (parseFloat(product.width) || 0),
+                            height: total.height + (parseFloat(product.height) || 0),
+                        };
+                    },
+                    { Length: 0, width: 0, height: 0 }
+                );
+                console.log(totalDimensions);
+                setDimension(totalDimensions?.Length * totalDimensions?.width * totalDimensions?.height)
             }
+            // Calculate the total weight and total price
+            setNewTotalWeight(newFields.reduce((sum, product) => sum + parseFloat(product.weight || 0), 0));
+            setNewTotalPrice(newFields.reduce((sum, product) => sum + parseFloat(product.totalPrice || 0), 0));
+
             return newFields;
         });
-        onProductDetailsChange(index, field, value);
+
+        onProductDetailsChange(index, field, value, newTotalWeight, newTotalPrice, dimension);
     };
 
+
+
+
+    // console.log("flight from product details=>", flight);
 
     return (
         <>
             {inputFields?.map((inputField, index) => (
                 <div key={index}>
                     <div className="product_details_form mb-3">
-                        <div className="product_form">
-                            <div className="">
-                                <label htmlFor={`category${index}`} className="form-label pro_form_label">
-                                    Product Category
-                                </label>
-                                <select
-                                    className="form-select"
-                                    id={`category${index}`}
-                                    required
-                                    value={inputField?.category || ''}
-                                    onChange={(e) => handleInputChange(index, 'category', e.target.value)}
-                                >
-                                    <option value="">Select...</option>
-                                    <option value="Chemical lequid">Chemical lequid</option>
-                                    <option value="Glass Items">Glass Items</option>
-                                    <option value="Paper">Paper</option>
-                                    <option value="Heavy Metals">Heavy Metals</option>
-                                </select>
-                            </div>
-                        </div>
                         <div className="product_form">
                             <div className="">
                                 <label htmlFor={`length${index}`} className="form-label pro_form_label">
@@ -109,19 +139,43 @@ const ProductDetails = ({ requestData, onProductDetailsChange }) => {
                                 />
                             </div>
                         </div>
+
+                        <div className="product_form">
+                            <div className="">
+                                <label htmlFor={`category${index}`} className="form-label pro_form_label">
+                                    Product Category
+                                </label>
+                                <select
+                                    className="form-select"
+                                    id={`category${index}`}
+                                    required
+                                    value={inputField?.category || ''}
+                                    onChange={(e) => handleInputChange(index, 'category', e.target.value)}
+                                >
+                                    <option value="">Select...</option>
+                                    {flight?.price?.map((categoryObj, categoryIndex) => (
+                                        <option key={categoryIndex} value={categoryObj?.category}>
+                                            {categoryObj?.category}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+
                         <div className="product_form">
                             <div className="">
                                 <label htmlFor={`weight${index}`} className="form-label pro_form_label">
-                                    Weight(kg)
+                                    Vol. Weight(kg)
                                 </label>
                                 <input
                                     type="text"
                                     className="form-control pro_form_input"
-                                    id={`weight${index}`}
+                                    id={`volumetricWeight${index}`}
                                     aria-describedby="emailHelp"
                                     placeholder="Weight"
                                     value={inputField.weight || ''}
                                     onChange={(e) => handleInputChange(index, 'weight', e.target.value)}
+                                    disabled
                                 />
                             </div>
                         </div>
@@ -151,8 +205,8 @@ const ProductDetails = ({ requestData, onProductDetailsChange }) => {
                                         type="radio"
                                         name={`weightType${index}`}
                                         id={`total${index}`}
-                                        checked={inputField.weightType === 'total'}
-                                        onChange={() => handleInputChange(index, 'weightType', 'total')}
+                                        checked={inputField.count === 'total'}
+                                        onChange={() => handleInputChange(index, 'count', 'total')}
                                     />
                                     <label className="form-check-label text-white" htmlFor={`total${index}`}>
                                         Total
@@ -164,8 +218,8 @@ const ProductDetails = ({ requestData, onProductDetailsChange }) => {
                                         type="radio"
                                         name={`weightType${index}`}
                                         id={`perItem${index}`}
-                                        checked={inputField.weightType === 'perItem'}
-                                        onChange={() => handleInputChange(index, 'weightType', 'perItem')}
+                                        checked={inputField.count === 'perItem'}
+                                        onChange={() => handleInputChange(index, 'count', 'perItem')}
                                     />
                                     <label className="form-check-label text-white" htmlFor={`perItem${index}`}>
                                         Per Item

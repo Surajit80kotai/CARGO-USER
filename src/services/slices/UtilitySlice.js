@@ -1,10 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { ALLAIRLINE, GETALLFLIGHTS, SEARCHFLIGHTS } from "../api/Api";
+import { ALLAIRLINE, GETALLCATEGORYPRICE, GETALLFLIGHTS, SEARCHFLIGHTS } from "../api/Api";
 
 
 
 //AsyncThunk For Search Flight 
-export const userSearchFlights = createAsyncThunk("/user/signup", async ({ data, navigate, header }, { rejectWithValue }) => {
+export const userSearchFlights = createAsyncThunk("/user/search/flights", async ({ data, navigate, header }, { rejectWithValue }) => {
     try {
         const result = await SEARCHFLIGHTS(data, header);
         if (result?.data?.success) {
@@ -47,6 +47,17 @@ export const getAllAirlines = createAsyncThunk("/all/airline", async (payload, {
 })
 
 
+// All category price
+export const getAllCategoryPrice = createAsyncThunk("/all/category/price", async (payload, { rejectWithValue }) => {
+    try {
+        const result = await GETALLCATEGORYPRICE();
+        return result?.data;
+    } catch (err) {
+        return rejectWithValue(err.response.data);
+    }
+});
+
+
 
 // Creating Slice
 const UtilitySlice = createSlice({
@@ -55,6 +66,7 @@ const UtilitySlice = createSlice({
         searchData: null,
         flightData: [],
         airline_data: null,
+        all_category_data: null,
         status: null,
         loading: false
     },
@@ -112,6 +124,21 @@ const UtilitySlice = createSlice({
             state.error = payload;
         })
 
+        //States for getAllCategoryPrice
+        builder.addCase(getAllCategoryPrice.pending, (state, { payload }) => {
+            state.status = "Loading...";
+            state.loading = true;
+        })
+        builder.addCase(getAllCategoryPrice.fulfilled, (state, { payload }) => {
+            state.status = "Success";
+            state.loading = false;
+            state.all_category_data = payload;
+        })
+        builder.addCase(getAllCategoryPrice.rejected, (state, { payload }) => {
+            state.status = "Failed";
+            state.loading = false;
+            state.error = payload;
+        })
     }
 })
 

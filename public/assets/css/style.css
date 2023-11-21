@@ -2331,3 +2331,7 @@ footer {
 .slick-slide div {
   margin: 0 8px !important;
 }
+
+.react-tel-input .form-control {
+  width: 310px !important;
+}

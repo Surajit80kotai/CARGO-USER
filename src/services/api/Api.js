@@ -14,3 +14,5 @@ export const SEARCHFLIGHTS = (data, header) => API.post('/user/search/flights', 
 export const GETALLFLIGHTS = () => API.get('/all/flight');
 // all airline
 export const ALLAIRLINE = () => API.get('/system/all/airline');
+// all category
+export const GETALLCATEGORYPRICE = () => API.get('/all/category/price');

@@ -1,6 +1,8 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const Payment = () => {
+    const navigate = useNavigate();
     return (
         <>
             <main>
@@ -100,10 +102,10 @@ const Payment = () => {
                         </div>
                         <div className="card-actions flex justify-space-between">
                             <div className="flex-start">
-                                <button className="button button-secondary">Return to Store</button>
+                                {/* <button className="button button-secondary">Return to Store</button> */}
                             </div>
                             <div className="flex-end">
-                                <button className="button button-link">Back to Shipping</button>
+                                <button onClick={() => navigate('/booknow')} className="button button-link">Back to Shipping</button>
                                 <button className="button button-primary">Proceed</button>
                             </div>
                         </div>
