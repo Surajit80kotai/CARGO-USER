@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import SearchResultFlightList from '../components/core/search-result-filter/SearchResultFlightList';
 import PriceRangeFilter from '../components/core/search-result-filter/PriceRangeFilter';
 import AirlineFilter from '../components/core/search-result-filter/AirlineFilter';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllAirlines, getAllCategoryPrice } from '../services/slices/UtilitySlice';
+import { getAllAirlines } from '../services/slices/UtilitySlice';
 import ProductDetails from '../components/core/search-result-filter/ProductDetails';
 import ShippingDetails from '../components/core/search-result-filter/ShippingDetails';
-import { encryptData, decryptData } from '../util/encryptionUtils';
+import { encryptData } from '../util/encryptionUtils';
+import { toast } from 'react-toastify';
 
 
 const SearchResults = () => {
@@ -16,17 +17,35 @@ const SearchResults = () => {
 
     const location = useLocation();
     const { resultData = [], requestData = [] } = location.state || [];
+
+    const { quantity } = requestData;
+    // Convert quantity to a number
+    const quantityNumber = parseInt(quantity, Infinity);
+
     const [filteredData, setFilteredData] = useState(resultData);
     const [selectedAirlines, setSelectedAirlines] = useState([]);
     const [airlineData, setAirlineData] = useState([]);
-    const [productDetails, setProductDetails] = useState([]);
-    const [allCategoryData, setAllCategoryData] = useState([]);
+    const [productDetails, setProductDetails] = useState(Array(quantityNumber).fill({
+        Length: '',
+        width: '',
+        height: '',
+        weight: '',
+        vol_weight: '',
+        chargeable_weight: '',
+        count: 'total',
+        category: '',
+        totalPrice: '',
+        isStockable: true,
+        isTurnable: false,
+        isBatteryIncluded: true
+    }));
+
     const [selectedFlight, setSelectedFlight] = useState(null);
     // State to track the booking state for each item
     const [bookingStates, setBookingStates] = useState([]);
     const [totalWeight, setTotalWeight] = useState(0);
     const [totalPrice, setTotalPrice] = useState(0);
-    const [dimension, setTotalDimension] = useState('');
+    const [dimension, setTotalDimension] = useState(null);
 
 
     // Take values for shippingDetails //
@@ -40,8 +59,8 @@ const SearchResults = () => {
     // console.log(shippingDetails);
 
     const dispatch = useDispatch();
-    // const navigate = useNavigate();
-    const { airline_data, all_category_data } = useSelector(state => state.utilitySlice);
+    const navigate = useNavigate();
+    const { airline_data } = useSelector(state => state.utilitySlice);
 
     // Function to get the minimum price from an array of flights
     const getMinPriceFlight = (flights) => {
@@ -107,24 +126,12 @@ const SearchResults = () => {
     };
 
 
-    // handleProductDetailsChange function
-    const handleProductDetailsChange = useCallback((index, field, value, newTotalWeight, newTotalPrice, dimension) => {
-        const updatedProductDetails = [...productDetails];
-        updatedProductDetails[index] = {
-            ...updatedProductDetails[index],
-            [field]: value,
-        };
-        setProductDetails(updatedProductDetails);
-        setTotalWeight(newTotalWeight);
-        setTotalPrice(newTotalPrice);
-        setTotalDimension(dimension);
-    }, [productDetails]);
-
-
     // Callback function to handle the click event
     const handleBookNowClick = (flightData, index) => {
         // Do something with the selected flight data (e.g., store it in state)
         setSelectedFlight(flightData);
+        const encryptedFlightData = encryptData(flightData);
+        window.sessionStorage.setItem("MmPLHcYiqG", encryptedFlightData);
         // Update the booking state for the clicked index
         setBookingStates(() => {
             const newStates = Array.from({ length: filteredData?.length }, (_, i) => i === index);
@@ -133,50 +140,76 @@ const SearchResults = () => {
     };
 
 
-    // handleSubmit function
+    // handleSubmit function with validation
     const handleSubmit = (e) => {
         e.preventDefault();
-        // navigate('/booknow', {
-        //     state: {
-        //         resultData: resultData,
-        //         requestData: requestData
-        //     }
-        // })
-
-        const DATA = {
-            origin: requestData?.origin,
-            destination: requestData?.destination,
-            shipment_date_time: requestData?.shipmentDate,
-            flight: selectedFlight?.flight,
-            customer_name: shippingDetails?.customer_name,
-            customer_phone: shippingDetails?.customer_phone,
-            customer_email: shippingDetails?.customer_email,
-            customer_address: shippingDetails?.customer_address,
-            product_details: productDetails,
-            _userID: user?.id,
-            totalWeight: Number(totalWeight)?.toFixed(2),
-            dimension: Number(dimension)?.toFixed(2),
-            chargeableWeight: Number(totalWeight)?.toFixed(2),
-            transport_type: "A2C",
-            price: totalPrice?.toFixed(2),
-            currency: "INR",
-        }
-        const encryptedData = encryptData(DATA);
-
         // const key = generateRandomString(10);
         // console.log(key);
 
-        window.sessionStorage.setItem("bhPNQreINf", encryptedData);
-        const encryptedBookingData = window.sessionStorage.getItem("bhPNQreINf");
-        const decryptedData = decryptData(encryptedBookingData);
+        // Validate productDetails array
+        const isProductDetailsValid = productDetails.every((product) => {
+            return Object.values(product).every(value => value !== "");
+        });
 
-        console.log('Decrypted booking data:', decryptedData);
+        // validation logic.
+        if (!selectedFlight) {
+            toast.warning("Book A Flight Before Proceeding.", {
+                autoClose: 3000
+            });
+        } else if (!isProductDetailsValid) {
+            toast.warning("Fill All The Product Details Before Proceeding.", {
+                autoClose: 3500
+            });
+        } else if (!shippingDetails?.customer_name) {
+            toast.warning("Customer Name Is Required Before Proceeding.", {
+                autoClose: 3500
+            });
+        } else if (!shippingDetails?.customer_phone) {
+            toast.warning("A Customer Phone Number Is Required Before Proceeding.", {
+                autoClose: 3500
+            });
+        } else if (!shippingDetails?.customer_email) {
+            toast.warning("A Customer Email Id Is Required Before Proceeding.", {
+                autoClose: 3500
+            });
+        } else if (!shippingDetails?.customer_address) {
+            toast.warning("Enter Customer Address Before Proceeding.", {
+                autoClose: 3500
+            });
+        } else {
+            const DATA = {
+                origin: requestData?.origin,
+                destination: requestData?.destination,
+                shipment_date_time: requestData?.shipmentDate,
+                flight: selectedFlight?.flight,
+                customer_name: shippingDetails?.customer_name,
+                customer_phone: shippingDetails?.customer_phone,
+                customer_email: shippingDetails?.customer_email,
+                customer_address: shippingDetails?.customer_address,
+                product_details: productDetails,
+                _userID: user?.id,
+                totalWeight: Number(totalWeight)?.toFixed(2),
+                dimension: dimension,
+                chargeableWeight: Number(totalWeight)?.toFixed(2),
+                transport_type: "A2C",
+                price: Number(totalPrice)?.toFixed(2),
+                currency: "INR",
+            }
+            const encryptedData = encryptData(DATA);
+            window.sessionStorage.setItem("bhPNQreINf", encryptedData);
+
+            navigate('/booknow', {
+                state: {
+                    resultData: resultData,
+                    requestData: requestData
+                }
+            })
+        }
     }
 
 
     useEffect(() => {
         dispatch(getAllAirlines());
-        dispatch(getAllCategoryPrice());
     }, [dispatch]);
 
 
@@ -190,8 +223,7 @@ const SearchResults = () => {
             setFilteredData(filteredResult);
         }
         setAirlineData(airline_data?.data);
-        setAllCategoryData(all_category_data?.data);
-    }, [resultData, selectedAirlines, airline_data, all_category_data]);
+    }, [resultData, selectedAirlines, airline_data]);
 
     // console.log("resultData", resultData);
 
@@ -397,12 +429,12 @@ const SearchResults = () => {
                         {/* Product Details */}
                         <h3 className="text-center text-white mt-5 mb-5">Fill Product Details</h3>
                         <ProductDetails
-                            requestData={requestData}
-                            onProductDetailsChange={handleProductDetailsChange}
-                            allCategoryData={allCategoryData}
+                            productDetails={productDetails}
+                            setProductDetails={setProductDetails}
                             flight={selectedFlight}
                             setTotalWeight={setTotalWeight}
                             setTotalPrice={setTotalPrice}
+                            setTotalDimension={setTotalDimension}
                         />
 
                         {/* Shipping Details */}

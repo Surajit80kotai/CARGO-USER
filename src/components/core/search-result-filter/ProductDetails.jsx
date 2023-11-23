@@ -1,27 +1,9 @@
-import React, { useState } from 'react'
+import React from 'react'
 
-const ProductDetails = ({ requestData, onProductDetailsChange, flight }) => {
-    const { quantity } = requestData;
-    // Convert quantity to a number
-    const quantityNumber = parseInt(quantity, Infinity);
-    const [inputFields, setInputFields] = useState(Array(quantityNumber).fill({
-        Length: '',
-        width: '',
-        height: '',
-        weight: '',
-        count: '',
-        category: '',
-        totalPrice: '',
-        isStockable: false,
-        isTrunable: false,
-        isBatteryIncluded: false
-    }));
-    const [newTotalWeight, setNewTotalWeight] = useState(0);
-    const [newTotalPrice, setNewTotalPrice] = useState(0);
-    const [dimension, setDimension] = useState("");
+const ProductDetails = ({ setProductDetails, flight, productDetails, setTotalWeight, setTotalPrice, setTotalDimension }) => {
 
     const handleInputChange = (index, field, value) => {
-        setInputFields((prevFields) => {
+        setProductDetails((prevFields) => {
             const newFields = [...prevFields];
             newFields[index] = {
                 ...newFields[index],
@@ -29,69 +11,68 @@ const ProductDetails = ({ requestData, onProductDetailsChange, flight }) => {
             };
 
             // Calculate the total price when weight or category is changed
-            if (field === 'weight' || field === 'category') {
-                // Assuming volumetric factor is 5000, you can adjust this value based on your requirements
-                const volumetricFactor = 5000;
+            // Assuming volumetric factor is 5000, you can adjust this value based on your requirements
+            const volumetricFactor = 5000;
+            // Calculate volumetric weight
+            const length = parseFloat(newFields[index].Length) || 0;
+            const width = parseFloat(newFields[index].width) || 0;
+            const height = parseFloat(newFields[index].height) || 0;
+            const volumetricWeight = (length * width * height) / volumetricFactor;
 
-                // Calculate volumetric weight
-                const length = parseFloat(newFields[index].Length) || 0;
-                const width = parseFloat(newFields[index].width) || 0;
-                const height = parseFloat(newFields[index].height) || 0;
-                const volumetricWeight = (length * width * height) / volumetricFactor;
+            // Calculate the chargeable weight (max of actual weight and volumetric weight)
+            const actualWeight = parseFloat(newFields[index].weight) || 0;
+            const chargeableWeight = Math.max(actualWeight, volumetricWeight);
 
-                // Update the state with the calculated volumetric weight
-                newFields[index].weight = volumetricWeight;
+            // Update the state with the calculated volumetric weight and chargeable weight
+            newFields[index].vol_weight = volumetricWeight;
+            newFields[index].chargeable_weight = chargeableWeight;
 
-                // Assuming flight is the object containing the flight details
-                const flightCategories = flight?.price || [];
+            // Assuming flight is the object containing the flight details
+            const flightCategories = flight?.price || [];
 
-                // Get the selected category
-                const selectedCategory = newFields[index].category;
+            // Get the selected category
+            const selectedCategory = newFields[index].category;
 
-                // Find the category object from flightCategories
-                const selectedCategoryObj = flightCategories.find(categoryObj => categoryObj.category === selectedCategory);
+            // Find the category object from flightCategories
+            const selectedCategoryObj = flightCategories.find(categoryObj => categoryObj.category === selectedCategory);
 
-                // Calculate the total price based on the selected category and volumetric weight
-                const totalPrice = selectedCategoryObj ? selectedCategoryObj?.price * volumetricWeight : 0;
+            // Calculate the total price based on the selected category and chargeable weight
+            const totalPrice = selectedCategoryObj ? selectedCategoryObj?.price * chargeableWeight : 0;
 
-                // Update the state with the calculated total price
-                newFields[index].totalPrice = totalPrice;
+            // Update the state with the calculated total price
+            newFields[index].totalPrice = totalPrice;
 
-                // Calculate the total dimensions
-                const totalDimensions = newFields.reduce(
-                    (total, product) => {
-                        return {
-                            Length: total.Length + (parseFloat(product.Length) || 0),
-                            width: total.width + (parseFloat(product.width) || 0),
-                            height: total.height + (parseFloat(product.height) || 0),
-                        };
-                    },
-                    { Length: 0, width: 0, height: 0 }
-                );
-                console.log(totalDimensions);
-                setDimension(totalDimensions?.Length * totalDimensions?.width * totalDimensions?.height)
-            }
+            // Calculate the total dimensions
+            const totalDimensions = newFields.reduce(
+                (total, product) => {
+                    return {
+                        Length: total.Length + (parseFloat(product.Length) || 0),
+                        width: total.width + (parseFloat(product.width) || 0),
+                        height: total.height + (parseFloat(product.height) || 0),
+                    };
+                },
+                { Length: 0, width: 0, height: 0 }
+            );
+            // console.log(`${totalDimensions?.Length} x ${totalDimensions?.width} x ${totalDimensions?.height}`);
+            setTotalDimension(`${totalDimensions?.Length} x ${totalDimensions?.width} x ${totalDimensions?.height}`);
+
             // Calculate the total weight and total price
-            setNewTotalWeight(newFields.reduce((sum, product) => sum + parseFloat(product.weight || 0), 0));
-            setNewTotalPrice(newFields.reduce((sum, product) => sum + parseFloat(product.totalPrice || 0), 0));
+            setTotalWeight(newFields.reduce((sum, product) => sum + parseFloat(product.weight || 0), 0));
+            setTotalPrice(newFields.reduce((sum, product) => sum + parseFloat(product.totalPrice || 0), 0));
 
             return newFields;
         });
-
-        onProductDetailsChange(index, field, value, newTotalWeight, newTotalPrice, dimension);
     };
-
-
-
 
     // console.log("flight from product details=>", flight);
 
     return (
         <>
-            {inputFields?.map((inputField, index) => (
+            {productDetails?.map((inputField, index) => (
                 <div key={index}>
-                    <div className="product_details_form mb-3">
-                        <div className="product_form">
+                    <div className="row">
+                        {/* Length(cm) */}
+                        <div className="col-md-2">
                             <div className="">
                                 <label htmlFor={`length${index}`} className="form-label pro_form_label">
                                     Length(cm)
@@ -102,12 +83,17 @@ const ProductDetails = ({ requestData, onProductDetailsChange, flight }) => {
                                     id={`length${index}`}
                                     aria-describedby="emailHelp"
                                     placeholder="Length"
-                                    value={inputField.Length || ''}
+                                    value={inputField.Length}
                                     onChange={(e) => handleInputChange(index, 'Length', e.target.value)}
+                                    pattern="^\d+(\.\d+)?$"
+                                    title="Please enter a number"
+                                    required
                                 />
                             </div>
                         </div>
-                        <div className="product_form">
+
+                        {/* Width(cm) */}
+                        <div className="col-md-2">
                             <div className="">
                                 <label htmlFor={`width${index}`} className="form-label pro_form_label">
                                     Width(cm)
@@ -118,12 +104,17 @@ const ProductDetails = ({ requestData, onProductDetailsChange, flight }) => {
                                     id={`width${index}`}
                                     aria-describedby="emailHelp"
                                     placeholder="Width"
-                                    value={inputField.width || ''}
+                                    value={inputField.width}
                                     onChange={(e) => handleInputChange(index, 'width', e.target.value)}
+                                    pattern="^\d+(\.\d+)?$"
+                                    title="Please enter a number"
+                                    required
                                 />
                             </div>
                         </div>
-                        <div className="product_form">
+
+                        {/* Height(cm) */}
+                        <div className="col-md-2">
                             <div className="">
                                 <label htmlFor={`height${index}`} className="form-label pro_form_label">
                                     Height(cm)
@@ -134,13 +125,17 @@ const ProductDetails = ({ requestData, onProductDetailsChange, flight }) => {
                                     id={`height${index}`}
                                     aria-describedby="emailHelp"
                                     placeholder="Height"
-                                    value={inputField.height || ''}
+                                    value={inputField.height}
                                     onChange={(e) => handleInputChange(index, 'height', e.target.value)}
+                                    pattern="^\d+(\.\d+)?$"
+                                    title="Please enter a number"
+                                    required
                                 />
                             </div>
                         </div>
 
-                        <div className="product_form">
+                        {/* Product Category */}
+                        <div className="col-md-2">
                             <div className="">
                                 <label htmlFor={`category${index}`} className="form-label pro_form_label">
                                     Product Category
@@ -148,9 +143,9 @@ const ProductDetails = ({ requestData, onProductDetailsChange, flight }) => {
                                 <select
                                     className="form-select"
                                     id={`category${index}`}
-                                    required
-                                    value={inputField?.category || ''}
+                                    value={inputField?.category}
                                     onChange={(e) => handleInputChange(index, 'category', e.target.value)}
+                                    required
                                 >
                                     <option value="">Select...</option>
                                     {flight?.price?.map((categoryObj, categoryIndex) => (
@@ -162,24 +157,67 @@ const ProductDetails = ({ requestData, onProductDetailsChange, flight }) => {
                             </div>
                         </div>
 
-                        <div className="product_form">
+                        {/* Gross Weight(kg) */}
+                        <div className="col-md-2">
                             <div className="">
                                 <label htmlFor={`weight${index}`} className="form-label pro_form_label">
-                                    Vol. Weight(kg)
+                                    Gross Weight(kg)
                                 </label>
                                 <input
                                     type="text"
                                     className="form-control pro_form_input"
-                                    id={`volumetricWeight${index}`}
+                                    id={`weight${index}`}
                                     aria-describedby="emailHelp"
-                                    placeholder="Weight"
-                                    value={inputField.weight || ''}
+                                    placeholder="1 Kg."
+                                    value={inputField.weight}
                                     onChange={(e) => handleInputChange(index, 'weight', e.target.value)}
+                                    pattern="^\d+(\.\d+)?$"
+                                    title="Please enter a number"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        {/* Volumetric Weight(kg) */}
+                        <div className="col-md-2">
+                            <div className="">
+                                <label htmlFor={`vol_weight${index}`} className="form-label pro_form_label">
+                                    Volumetric Weight(kg)
+                                </label>
+                                <input
+                                    type="text"
+                                    className="form-control pro_form_input"
+                                    id={`vol_weight${index}`}
+                                    aria-describedby="emailHelp"
+                                    placeholder="1 Kg."
+                                    value={inputField.vol_weight}
+                                    onChange={(e) => handleInputChange(index, 'vol_weight', e.target.value)}
                                     disabled
                                 />
                             </div>
                         </div>
-                        <div className="product_form">
+
+                        {/* Chargeable Weight(kg) */}
+                        <div className="col-md-2">
+                            <div className="">
+                                <label htmlFor={`chargeable_weight${index}`} className="form-label pro_form_label">
+                                    Chargeable Weight(kg)
+                                </label>
+                                <input
+                                    type="text"
+                                    className="form-control pro_form_input"
+                                    id={`chargeable_weight${index}`}
+                                    aria-describedby="emailHelp"
+                                    placeholder="1 Kg."
+                                    value={inputField.chargeable_weight}
+                                    onChange={(e) => handleInputChange(index, 'chargeable_weight', e.target.value)}
+                                    disabled
+                                />
+                            </div>
+                        </div>
+
+                        {/* Price */}
+                        <div className="col-md-2">
                             <div className="">
                                 <label htmlFor={`price${index}`} className="form-label pro_form_label">
                                     Price
@@ -190,13 +228,15 @@ const ProductDetails = ({ requestData, onProductDetailsChange, flight }) => {
                                     id={`price${index}`}
                                     aria-describedby="emailHelp"
                                     placeholder="Price"
-                                    value={inputField.totalPrice || ''}
+                                    value={inputField.totalPrice}
                                     onChange={(e) => handleInputChange(index, 'totalPrice', e.target.value)}
                                     disabled
                                 />
                             </div>
                         </div>
-                        <div className="product_form">
+
+                        {/* Weight Type */}
+                        <div className="col-md-2">
                             <div className="">
                                 <label className="form-label pro_form_label">Weight Type</label>
                                 <div className="form-check">
@@ -207,6 +247,7 @@ const ProductDetails = ({ requestData, onProductDetailsChange, flight }) => {
                                         id={`total${index}`}
                                         checked={inputField.count === 'total'}
                                         onChange={() => handleInputChange(index, 'count', 'total')}
+                                        required
                                     />
                                     <label className="form-check-label text-white" htmlFor={`total${index}`}>
                                         Total
@@ -220,6 +261,7 @@ const ProductDetails = ({ requestData, onProductDetailsChange, flight }) => {
                                         id={`perItem${index}`}
                                         checked={inputField.count === 'perItem'}
                                         onChange={() => handleInputChange(index, 'count', 'perItem')}
+                                        required
                                     />
                                     <label className="form-check-label text-white" htmlFor={`perItem${index}`}>
                                         Per Item
@@ -227,7 +269,9 @@ const ProductDetails = ({ requestData, onProductDetailsChange, flight }) => {
                                 </div>
                             </div>
                         </div>
-                        <div className="product_form">
+
+                        {/* Packing */}
+                        <div className="col-md-2">
                             <div className="">
                                 <label className="form-label pro_form_label">Packing</label>
                                 <div className="form-check">
@@ -235,7 +279,7 @@ const ProductDetails = ({ requestData, onProductDetailsChange, flight }) => {
                                         className="form-check-input"
                                         type="checkbox"
                                         id={`stockable${index}`}
-                                        checked={inputField.isStockable || false}
+                                        checked={inputField.isStockable}
                                         onChange={() => handleInputChange(index, 'isStockable', !inputField.isStockable)}
                                     />
                                     <label className="form-check-label text-white" htmlFor={`stockable${index}`}>
@@ -247,7 +291,7 @@ const ProductDetails = ({ requestData, onProductDetailsChange, flight }) => {
                                         className="form-check-input"
                                         type="checkbox"
                                         id={`turnable${index}`}
-                                        checked={inputField.isTurnable || false}
+                                        checked={inputField.isTurnable}
                                         onChange={() => handleInputChange(index, 'isTurnable', !inputField.isTurnable)}
                                     />
                                     <label className="form-check-label text-white" htmlFor={`turnable${index}`}>
@@ -256,7 +300,9 @@ const ProductDetails = ({ requestData, onProductDetailsChange, flight }) => {
                                 </div>
                             </div>
                         </div>
-                        <div className="product_form">
+
+                        {/* Battery Include */}
+                        <div className="col-md-2">
                             <div className="">
                                 <label className="form-label pro_form_label">Battery Include</label>
                                 <div className="form-check">
@@ -265,7 +311,7 @@ const ProductDetails = ({ requestData, onProductDetailsChange, flight }) => {
                                         type="radio"
                                         name={`batteryInclude${index}`}
                                         id={`yes${index}`}
-                                        checked={inputField.isBatteryIncluded === true}
+                                        checked={inputField.isBatteryIncluded}
                                         onChange={() => handleInputChange(index, 'isBatteryIncluded', true)}
                                     />
                                     <label className="form-check-label text-white" htmlFor={`yes${index}`}>
@@ -278,7 +324,7 @@ const ProductDetails = ({ requestData, onProductDetailsChange, flight }) => {
                                         type="radio"
                                         name={`batteryInclude${index}`}
                                         id={`no${index}`}
-                                        checked={inputField.isBatteryIncluded === false}
+                                        checked={inputField.isBatteryIncluded}
                                         onChange={() => handleInputChange(index, 'isBatteryIncluded', false)}
                                     />
                                     <label className="form-check-label text-white" htmlFor={`no${index}`}>
@@ -287,8 +333,8 @@ const ProductDetails = ({ requestData, onProductDetailsChange, flight }) => {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <hr style={{ background: "white" }} />
+                        <hr style={{ background: "white" }} />
+                    </div >
                 </div>
             ))}
         </>

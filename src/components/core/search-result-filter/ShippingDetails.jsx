@@ -30,6 +30,7 @@ const ShippingDetails = ({ shippingDetails, onShippingDetailsChange }) => {
                         inputProps={{
                             name: 'customer_phone',
                         }}
+                        id="customer_phone"
                         enableSearch={true}
                         country={'in'}
                         value={shippingDetails?.customer_phone}

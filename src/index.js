@@ -8,11 +8,11 @@ import Login from './pages/Login';
 import { Bounce, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-phone-input-2/lib/style.css'
-import SuccessPage from './util/SuccessPage';
 import Signup from './pages/Signup';
 import Forgetpassword from './pages/Forgetpassword';
 import { Provider } from 'react-redux';
 import { Store } from './services/store/Store'
+import SuccessPage from './pages/SuccessPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
