@@ -1,12 +1,24 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { decryptData } from '../util/encryptionUtils';
 import { timeDifferenceCalculation } from '../util/timeDifferenceCalculation';
+import { useDispatch } from 'react-redux';
+import { saveBookingDetails, shareBookingViaEmail } from '../services/slices/UtilitySlice';
 
 const Booknow = () => {
+    // header
+    const header = {
+        headers: {
+            Authorization: `Bearer ${JSON.parse(window.localStorage.getItem("token"))}`
+        }
+    }
+    const [buttonState, setButtonState] = useState('default');
+    const [timeoutId, setTimeoutId] = useState(null);
+
     const location = useLocation();
     const { resultData = [], requestData = [] } = location.state || [];
 
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const VOLUMETRIC_FACTOR = 5000;
@@ -22,6 +34,7 @@ const Booknow = () => {
     // Time gap calculation
     const TIME = timeDifferenceCalculation(decryptedFlightData?.deperture_time, decryptedFlightData?.arival_time);
 
+    // calculating totals 
     const calculateTotals = () => {
         let totalLength = 0;
         let totalWidth = 0;
@@ -59,10 +72,68 @@ const Booknow = () => {
         };
     };
 
-    console.log('Decrypted booking data:', decryptedBookingData);
+    // function for copy to clipboard
+    const handleCopyDetails = () => {
+        const flightDetails = `
+            Flight: ${decryptedFlightData?.flight}
+            Origin: ${decryptedFlightData?.origin}
+            Destination: ${decryptedFlightData?.destination}
+            Shipment Date & Time: ${decryptedBookingData?.shipment_date_time}
+        `;
+
+        navigator.clipboard.writeText(flightDetails)
+            .then(() => alert("Flight details copied to clipboard"))
+            .catch((error) => console.error("Error copying details:", error));
+    };
+
+    // function for save data
+    const handleSave = () => {
+        const data = {
+            title: "Booked Flight Details",
+            text: "Check out these details",
+            flightData: decryptedFlightData,
+            bookingData: decryptedBookingData,
+            totals: calculateTotals(),
+        };
+        // console.log({ data });
+        dispatch(saveBookingDetails({ data, header }));
+    };
+
+    // function for share data
+    const handleShare = () => {
+        const data = {
+            title: "Booked Flight Details",
+            text: "Check out these details",
+            flightData: decryptedFlightData,
+            bookingData: decryptedBookingData,
+            totals: calculateTotals(),
+        };
+        // console.log({ data });
+        dispatch(shareBookingViaEmail({ data, header }));
+    };
+
+    // Book now button animation clcik
+    const handleClick = () => {
+        setButtonState('placing');
+
+        const timeout = setTimeout(() => {
+            setButtonState('done');
+            navigate('/payment');
+        }, 3500);
+        setTimeoutId(timeout);
+    };
+
+    // Cleanup the timeout when the component unmounts
+    useEffect(() => {
+        return () => {
+            clearTimeout(timeoutId);
+        };
+    }, [timeoutId]);
+
+
+    // console.log('Decrypted booking data:', decryptedBookingData);
     // console.log('Decrypted flight data:', decryptedFlightData);
     // console.log('resultData:', resultData);
-    // console.log('PRICE:', calculateTotals()?.totalPrice);
 
     return (
         <>
@@ -118,8 +189,8 @@ const Booknow = () => {
                                     {/* Save & Share button */}
                                     <div className="bk_right">
                                         <div className="save_btn">
-                                            <button className="sv_btn me-2">Save</button>
-                                            <button className="share"><i className="fas fa-share-alt" style={{ color: "#E70A3E" }}></i>Share</button>
+                                            <button className="sv_btn me-2" onClick={handleSave}>Save</button>
+                                            <button className="share" onClick={handleShare}><i className="fas fa-share-alt" style={{ color: "#E70A3E" }}></i>Share</button>
                                         </div>
                                     </div>
 
@@ -139,7 +210,7 @@ const Booknow = () => {
                                             </h3>
                                         </div>
                                         <div className="cpy_details">
-                                            <button><i className="far fa-copy"></i> Copy Flight Details</button>
+                                            <button onClick={handleCopyDetails}><i className="far fa-copy"></i> Copy Flight Details</button>
                                         </div>
                                     </div>
                                 </div>
@@ -171,7 +242,7 @@ const Booknow = () => {
                                                 return (
                                                     <tr key={index}>
                                                         <th scope="row">{index + 1}</th>
-                                                        <td className='text-center'>{item?.weight}</td>
+                                                        <td className='text-center'>{Number(item?.weight)?.toFixed(2)}</td>
                                                         <td className='text-center'>{Number(item?.vol_weight)?.toFixed(2)}</td>
                                                         <td className='text-center'>{Number(item?.chargeable_weight)?.toFixed(2)}</td>
                                                         <td className='text-center'>
@@ -189,7 +260,7 @@ const Booknow = () => {
                                                                 item?.isBatteryIncluded ? <i className="fa-solid fa-check" style={{ color: "#E70A3E" }}></i> : <i className="fa-solid fa-xmark" style={{ color: "#E70A3E" }}></i>
                                                             }
                                                         </td>
-                                                        <td className='text-center'>{item?.totalPrice}</td>
+                                                        <td className='text-center'>{item?.totalPrice?.toFixed(2)}/-</td>
                                                     </tr>
                                                 )
                                             })
@@ -198,13 +269,13 @@ const Booknow = () => {
                                     <thead>
                                         <tr>
                                             <th scope="col">TOTAL</th>
-                                            <th scope="col" className='text-center'>{calculateTotals()?.totalWeight}(Kg.)</th>
-                                            <th scope="col" className='text-center'>{calculateTotals()?.totalVolWeight}(Kg.)</th>
-                                            <th scope="col" className='text-center'>{calculateTotals()?.totalChargeableWeight}(Kg.)</th>
+                                            <th scope="col" className='text-center'>{calculateTotals()?.totalWeight?.toFixed(2)}(Kg.)</th>
+                                            <th scope="col" className='text-center'>{calculateTotals()?.totalVolWeight?.toFixed(2)}(Kg.)</th>
+                                            <th scope="col" className='text-center'>{calculateTotals()?.totalChargeableWeight?.toFixed(2)}(Kg.)</th>
                                             <th scope="col" className='text-center'></th>
                                             <th scope="col" className='text-center'></th>
                                             <th scope="col" className='text-center'></th>
-                                            <th scope="col" className='text-center'>{calculateTotals()?.totalPrice}/-</th>
+                                            <th scope="col" className='text-center'>{calculateTotals()?.totalPrice?.toFixed(2)}/-</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -216,7 +287,9 @@ const Booknow = () => {
                             <div className="booking_details_wrapper">
                                 <div className="book_details_head">
                                     <h3>Booking Details</h3>
-                                    <h5><span>&#8377;</span>{calculateTotals()?.totalPrice}</h5>
+                                </div>
+                                <div className="book_details_head">
+                                    <h5><span>&#8377;</span>{calculateTotals()?.totalPrice?.toFixed(2)}</h5>
                                 </div>
 
                                 <div className="order_summary mt-4">
@@ -225,7 +298,7 @@ const Booknow = () => {
                                             <h3>Chargeable Weight </h3>
                                         </div>
                                         <div className="sum_details">
-                                            <h4>{calculateTotals()?.totalChargeableWeight}<span> Kg</span></h4>
+                                            <h4>{calculateTotals()?.totalChargeableWeight?.toFixed(2)}<span> Kg</span></h4>
                                         </div>
                                     </div>
                                     <hr />
@@ -253,7 +326,7 @@ const Booknow = () => {
                                             <h3>Chargeable Weight </h3>
                                         </div>
                                         <div className="sum_details">
-                                            <h4>{calculateTotals()?.totalChargeableWeight} <span> Kg</span></h4>
+                                            <h4>{calculateTotals()?.totalChargeableWeight?.toFixed(2)} <span> Kg</span></h4>
                                         </div>
                                     </div>
                                     <hr />
@@ -262,24 +335,27 @@ const Booknow = () => {
                                             <h3 className="fw-bold">Total</h3>
                                         </div>
                                         <div className="sum_details">
-                                            <h4> <span>₹</span>{calculateTotals()?.totalPrice}</h4>
+                                            <h4> <span>₹</span>{calculateTotals()?.totalPrice?.toFixed(2)}</h4>
                                         </div>
                                     </div>
                                 </div>
                                 {/* <button className="book"><i className="fas fa-lock" style={{color: "#ffffff"}}></i> Book Now</button> */}
-                                <button onClick={() => navigate('/payment')} className="place-order place-order--default">
-                                    <div className="default text">Continue</div>
+                                <button
+                                    onClick={handleClick}
+                                    className={`place-order place-order--${buttonState}`}
+                                >
+                                    <div className="default text">Book Now</div>
                                     <div className="forklift">
                                         <div className="upper"></div>
                                         <div className="lower"></div>
                                     </div>
-                                    <div className="box animation"></div>
+                                    <div className={`box animation ${buttonState === 'done' ? 'animate' : ''}`}></div>
                                     <div className="done text"><i className="fas fa-check" style={{ color: "#ffffff" }}></i> Done</div>
                                 </button>
                             </div>
                         </div>
                     </div>
-                </div>
+                </div >
             </main >
         </>
     )

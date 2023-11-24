@@ -16,3 +16,7 @@ export const GETALLFLIGHTS = () => API.get('/all/flight');
 export const ALLAIRLINE = () => API.get('/system/all/airline');
 // all category
 export const GETALLCATEGORYPRICE = () => API.get('/all/category/price');
+// save booking details
+export const SAVEBOOKINGDETAILS = (data, header) => API.post('/save/booking/details', data, header);
+// booking details share/via/email
+export const SHAREBOOKINGVIAEMAIL = (data, header) => API.post('/share/via/email', data, header);

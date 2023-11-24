@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { ALLAIRLINE, GETALLCATEGORYPRICE, GETALLFLIGHTS, SEARCHFLIGHTS } from "../api/Api";
+import { ALLAIRLINE, GETALLCATEGORYPRICE, GETALLFLIGHTS, SAVEBOOKINGDETAILS, SEARCHFLIGHTS, SHAREBOOKINGVIAEMAIL } from "../api/Api";
+import { toast } from "react-toastify";
 
 
 
@@ -51,6 +52,36 @@ export const getAllAirlines = createAsyncThunk("/all/airline", async (payload, {
 export const getAllCategoryPrice = createAsyncThunk("/all/category/price", async (payload, { rejectWithValue }) => {
     try {
         const result = await GETALLCATEGORYPRICE();
+        return result?.data;
+    } catch (err) {
+        return rejectWithValue(err.response.data);
+    }
+});
+
+
+// Save Booking Details
+export const saveBookingDetails = createAsyncThunk("/save/booking/details", async ({ data, header }, { rejectWithValue }) => {
+    try {
+        const result = await SAVEBOOKINGDETAILS(data, header);
+        // react toast message
+        toast.success(result?.data?.message, {
+            autoClose: 4000
+        });
+        return result?.data;
+    } catch (err) {
+        return rejectWithValue(err.response.data);
+    }
+});
+
+
+// Share Booking Via Email
+export const shareBookingViaEmail = createAsyncThunk("/share/via/email", async ({ data, header }, { rejectWithValue }) => {
+    try {
+        const result = await SHAREBOOKINGVIAEMAIL(data, header);
+        // react toast message
+        toast.info(result?.data?.message, {
+            autoClose: 4000
+        });
         return result?.data;
     } catch (err) {
         return rejectWithValue(err.response.data);

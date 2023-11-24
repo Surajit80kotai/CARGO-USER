@@ -52,7 +52,7 @@ const Navbar = () => {
                 <div className="container-fluid">
                     <div className="nav-wrapper ">
 
-                        <div className="logo-container" onClick={() => navigate('/')}>
+                        <div className="logo-container" style={{ cursor: "pointer" }} onClick={() => navigate('/')}>
                             <img className="logo" src="/assets/img/logo (3).png" alt="Logo" />
                         </div>
                         <nav>
@@ -75,7 +75,9 @@ const Navbar = () => {
                         </nav>
 
                         <div className="right ">
-                            <div className="select-dropdown">
+
+                            {/* Select From Dropdown */}
+                            {/* <div className="select-dropdown">
                                 <button type="button" data-value="" className="select-dropdown__button"><span>India</span>
                                     <i className="fas fa-chevron-down"></i>
                                 </button>
@@ -182,7 +184,7 @@ const Navbar = () => {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
                             <div className="login_btn">
                                 <Link onClick={LOGOUT} to="/login">Logout</Link>
                             </div>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 const Payment = () => {
     const navigate = useNavigate();
+
     return (
         <>
             <main>
@@ -48,25 +49,25 @@ const Payment = () => {
                                         <h4>Billing Info</h4>
                                     </div>
                                     <div className="field full">
-                                        <label for="name">Full Name</label>
+                                        <label htmlFor="name">Full Name</label>
                                         <input id="name" type="text" placeholder="Full Name" />
                                     </div>
                                     <div className="field full">
-                                        <label for="address">Billing Address</label>
+                                        <label htmlFor="address">Billing Address</label>
                                         <input id="address" type="text" placeholder="Billing Address" />
                                     </div>
                                     <div className="flex justify-space-between">
                                         <div className="field half">
-                                            <label for="city">City</label>
+                                            <label htmlFor="city">City</label>
                                             <input id="city" type="text" placeholder="City" />
                                         </div>
                                         <div className="field half">
-                                            <label for="state">State</label>
+                                            <label htmlFor="state">State</label>
                                             <input id="state" type="text" placeholder="State" />
                                         </div>
                                     </div>
                                     <div className="field full">
-                                        <label for="zip">Zip</label>
+                                        <label htmlFor="zip">Zip</label>
                                         <input id="zip" type="text" placeholder="Zip" />
                                     </div>
                                 </div>
@@ -76,25 +77,25 @@ const Payment = () => {
                                         <h4>Credit Card Info</h4>
                                     </div>
                                     <div className="field full">
-                                        <label for="name">Cardholder Name</label>
+                                        <label htmlFor="name">Cardholder Name</label>
                                         <input id="name" type="text" placeholder="Full Name" />
                                     </div>
                                     <div className="field full">
-                                        <label for="address">Card Number</label>
+                                        <label htmlFor="address">Card Number</label>
                                         <input id="address" type="text" placeholder="1234-5678-9012-3456" />
                                     </div>
                                     <div className="flex justify-space-between">
                                         <div className="field half">
-                                            <label for="city">Exp. Month</label>
+                                            <label htmlFor="city">Exp. Month</label>
                                             <input id="city" type="text" placeholder="12" />
                                         </div>
                                         <div className="field half">
-                                            <label for="state">Exp. Year</label>
+                                            <label htmlFor="state">Exp. Year</label>
                                             <input id="state" type="text" placeholder="19" />
                                         </div>
                                     </div>
                                     <div className="field full">
-                                        <label for="zip">CVC Number</label>
+                                        <label htmlFor="zip">CVC Number</label>
                                         <input id="zip" type="text" placeholder="468" />
                                     </div>
                                 </div>
@@ -106,7 +107,7 @@ const Payment = () => {
                             </div>
                             <div className="flex-end">
                                 <button onClick={() => navigate('/booknow')} className="button button-link">Back to Shipping</button>
-                                <button className="button button-primary">Proceed</button>
+                                <button onClick={() => navigate('/successpage')} className="button button-primary">Proceed</button>
                             </div>
                         </div>
                     </div>

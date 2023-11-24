@@ -17,11 +17,11 @@ const AppRoute = () => {
             <Routes>
                 <Route element={<ProtectedRouteOne />}>
                     <Route path='/' element={<Home />} exact />
+                    <Route path='/payment' element={<Payment />} />
+                    <Route path='/booknow' element={<Booknow />} />
+                    <Route path='/orderhistory' element={<Orderhistory />} />
+                    <Route path='/serchresult' element={<SearchResults />} />
                 </Route>
-                <Route path='/payment' element={<Payment />} />
-                <Route path='/booknow' element={<Booknow />} />
-                <Route path='/orderhistory' element={<Orderhistory />} />
-                <Route path='/serchresult' element={<SearchResults />} />
                 {/* <Route path='/test' element={<Test />} /> */}
             </Routes>
             <Footer />
