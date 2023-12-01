@@ -20,3 +20,7 @@ export const GETALLCATEGORYPRICE = () => API.get('/all/category/price');
 export const SAVEBOOKINGDETAILS = (data, header) => API.post('/save/booking/details', data, header);
 // booking details share/via/email
 export const SHAREBOOKINGVIAEMAIL = (data, header) => API.post('/share/via/email', data, header);
+// booking
+export const BOOKING = (data, header) => API.post('/take/booking', data, header);
+// delete file
+export const DELETEFILE = (data) => API.post('/delete/file', data);

@@ -2332,6 +2332,10 @@ footer {
   margin: 0 8px !important;
 }
 
+#phone-input .react-tel-input .form-control {
+  width: 306px !important;
+}
+
 .react-tel-input .form-control {
-  width: 310px !important;
+  width: 469px !important;
 }

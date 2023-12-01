@@ -291,8 +291,8 @@ const ProductDetails = ({ setProductDetails, flight, productDetails, setTotalWei
                                         className="form-check-input"
                                         type="checkbox"
                                         id={`turnable${index}`}
-                                        checked={inputField.isTurnable}
-                                        onChange={() => handleInputChange(index, 'isTurnable', !inputField.isTurnable)}
+                                        checked={inputField.isTrunable}
+                                        onChange={() => handleInputChange(index, 'isTrunable', !inputField.isTrunable)}
                                     />
                                     <label className="form-check-label text-white" htmlFor={`turnable${index}`}>
                                         Turnable

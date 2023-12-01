@@ -13,6 +13,7 @@ import Forgetpassword from './pages/Forgetpassword';
 import { Provider } from 'react-redux';
 import { Store } from './services/store/Store'
 import SuccessPage from './pages/SuccessPage';
+import ProtectedRouteTwo from './routes/protected/ProtectedRouteTwo';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -20,9 +21,11 @@ root.render(
     <Router>
       <Routes>
         <Route path='*' element={<App />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/signup' element={<Signup />} />
-        <Route path='/forget-password' element={<Forgetpassword />} />
+        <Route element={<ProtectedRouteTwo />}>
+          <Route path='/login' element={<Login />} />
+          <Route path='/signup' element={<Signup />} />
+          <Route path='/forget-password' element={<Forgetpassword />} />
+        </Route>
         <Route path='/successpage' element={<SuccessPage />} />
       </Routes>
       <ToastContainer style={{ "fontSize": "15px" }} transition={Bounce} position="top-right" />

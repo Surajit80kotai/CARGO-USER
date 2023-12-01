@@ -24,7 +24,7 @@ const ShippingDetails = ({ shippingDetails, onShippingDetailsChange }) => {
                         required
                     />
                 </div>
-                <div className="col-md-3">
+                <div className="col-md-3" id='phone-input'>
                     <label htmlFor="customer_phone" className="form-label result_label">Phone Number</label>
                     <PhoneInput
                         inputProps={{

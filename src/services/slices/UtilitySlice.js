@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { ALLAIRLINE, GETALLCATEGORYPRICE, GETALLFLIGHTS, SAVEBOOKINGDETAILS, SEARCHFLIGHTS, SHAREBOOKINGVIAEMAIL } from "../api/Api";
+import { ALLAIRLINE, BOOKING, DELETEFILE, GETALLCATEGORYPRICE, GETALLFLIGHTS, SAVEBOOKINGDETAILS, SEARCHFLIGHTS, SHAREBOOKINGVIAEMAIL } from "../api/Api";
 import { toast } from "react-toastify";
 
 
@@ -89,21 +89,53 @@ export const shareBookingViaEmail = createAsyncThunk("/share/via/email", async (
 });
 
 
+// Booking
+export const cargoBooking = createAsyncThunk("/take/booking", async ({ data, header }, { rejectWithValue }) => {
+    try {
+        const result = await BOOKING(data, header);
+        if (result?.data?.success) {
+            // react toast message
+            toast.info(result?.data?.message, {
+                autoClose: 4000
+            });
+        }
+        return result?.data;
+    } catch (err) {
+        return rejectWithValue(err.response.data);
+    }
+});
+
+
+//AsyncThunk For fileDelete 
+export const fileDelete = createAsyncThunk("/delete/file", async (body, { rejectWithValue }) => {
+    try {
+        await DELETEFILE(body);
+    } catch (err) {
+        return rejectWithValue(err.response.data);
+    }
+
+})
+
+
 
 // Creating Slice
 const UtilitySlice = createSlice({
-    name: "utiltiySlice",
+    name: "utilitySlice",
     initialState: {
         searchData: null,
         flightData: [],
         airline_data: null,
         all_category_data: null,
+        create_booking_stat: {},
         status: null,
         loading: false
     },
     reducers: {
         clearSearchData: (state, { payload }) => {
             state.searchData = null;
+        },
+        clearCreateBookingStatus(state) {
+            state.create_booking_stat = null;
         }
     },
     extraReducers: (builder) => {
@@ -170,8 +202,24 @@ const UtilitySlice = createSlice({
             state.loading = false;
             state.error = payload;
         })
+
+        //States for cargoBooking
+        builder.addCase(cargoBooking.pending, (state, { payload }) => {
+            state.status = "Loading...";
+            state.loading = true;
+        })
+        builder.addCase(cargoBooking.fulfilled, (state, { payload }) => {
+            state.status = "Success";
+            state.loading = false;
+            state.create_booking_stat = payload;
+        })
+        builder.addCase(cargoBooking.rejected, (state, { payload }) => {
+            state.status = "Failed";
+            state.loading = false;
+            state.error = payload;
+        })
     }
 })
 
-export const { clearSearchData } = UtilitySlice.actions;
+export const { clearSearchData, clearCreateBookingStatus } = UtilitySlice.actions;
 export default UtilitySlice.reducer;

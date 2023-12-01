@@ -1,8 +1,12 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const SuccessPage = () => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    
+    useEffect(() => {
+        window.sessionStorage.clear();
+    }, []);
 
     return (
         <>

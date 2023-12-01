@@ -190,7 +190,7 @@ const Booknow = () => {
                                     <div className="bk_right">
                                         <div className="save_btn">
                                             <button className="sv_btn me-2" onClick={handleSave}>Save</button>
-                                            <button className="share" onClick={handleShare}><i className="fas fa-share-alt" style={{ color: "#E70A3E" }}></i>Share</button>
+                                            <button className="share" onClick={handleShare}><i className="fas fa-share-alt" style={{ color: "#E70A3E" }}></i>Share In Email</button>
                                         </div>
                                     </div>
 

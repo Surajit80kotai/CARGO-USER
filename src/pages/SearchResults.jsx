@@ -25,7 +25,7 @@ const SearchResults = () => {
     const [filteredData, setFilteredData] = useState(resultData);
     const [selectedAirlines, setSelectedAirlines] = useState([]);
     const [airlineData, setAirlineData] = useState([]);
-    const [productDetails, setProductDetails] = useState(Array(quantityNumber).fill({
+    const [productDetails, setProductDetails] = useState(Array(quantityNumber)?.fill({
         Length: '',
         width: '',
         height: '',
@@ -36,7 +36,7 @@ const SearchResults = () => {
         category: '',
         totalPrice: '',
         isStockable: true,
-        isTurnable: false,
+        isTrunable: false,
         isBatteryIncluded: true
     }));
 
@@ -187,6 +187,7 @@ const SearchResults = () => {
                 customer_email: shippingDetails?.customer_email,
                 customer_address: shippingDetails?.customer_address,
                 product_details: productDetails,
+                _airlineId: selectedFlight?._airlineId?._id,
                 _userID: user?.id,
                 totalWeight: Number(totalWeight)?.toFixed(2),
                 dimension: dimension,
@@ -206,7 +207,6 @@ const SearchResults = () => {
             })
         }
     }
-
 
     useEffect(() => {
         dispatch(getAllAirlines());
